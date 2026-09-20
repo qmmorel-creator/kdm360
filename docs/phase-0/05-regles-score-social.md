@@ -45,15 +45,22 @@ d'OS360 :
    `MODULE_GPS.md` — à vérifier précisément).
 3. **Réseau** (visualisation du graphe relationnel).
 
-Ce n'est pas encore documenté avec le même niveau de précision que le Sankey figé
-(`02-sankey-reference.md`). Contrairement au Sankey, rien n'indique à ce stade que ces
-trois visualisations doivent être **pixel-identiques** à l'existant (ce n'est pas une
-contrainte énoncée dans le prompt de refonte comme pour le Sankey) — seulement qu'elles
-doivent être **conservées comme fonctionnalités**, avec le nouveau langage visuel
-retenu. À confirmer avec Quentin : ces trois vues doivent-elles rester à l'identique
-visuellement (comme le Sankey), ou seulement fonctionnellement (même information,
-nouveau design) ?
+**Tranché avec Quentin : contrairement au Sankey, le rendu visuel de ces trois
+visualisations peut être adapté à la nouvelle direction graphique.** Ce qui doit être
+préservé à l'identique, c'est la **fonctionnalité** et le **type d'information**
+restitué — pas le pixel :
 
-Si nécessaire, un audit précis de ces trois composants dans `index.html` (source,
-config, interactions) pourra être fait sur le même modèle que celui du Sankey, avant le
-développement réel.
+1. **Radar** (relationnel, vue polaire) : même principe (positionnement des contacts
+   par ancienneté/proximité de contact autour d'un centre, filtrage par cercle) et les
+   mêmes données affichées, dans un nouveau langage visuel.
+2. **Vue géographique** (module GPS existant — `gps.gs`, `MODULE_GPS.md`) : même
+   fonction (localiser des données dans l'espace), à ré-habiller.
+3. **Réseau** : même fonction (visualiser le graphe relationnel entre contacts), à
+   ré-habiller.
+
+Contrairement au Sankey, pas besoin d'un contrat de non-régression pixel-à-pixel. Un
+inventaire précis de **ce que chaque vue montre et permet de faire aujourd'hui**
+(champs affichés, filtres, interactions, pas la géométrie du rendu) reste utile avant
+le développement réel, pour s'assurer qu'aucune fonction n'est perdue en changeant
+d'habillage — c'est le même principe que la matrice de parité prévue section 24 du
+prompt de refonte, appliqué ici par anticipation à ces trois composants précis.
