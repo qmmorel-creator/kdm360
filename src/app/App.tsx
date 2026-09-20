@@ -7,6 +7,7 @@ import { HealthPage } from '@/pages/HealthPage';
 import { SportPage } from '@/pages/SportPage';
 import { SocialPage } from '@/pages/SocialPage';
 import { ExplorerPage } from '@/pages/ExplorerPage';
+import { SettingsPage } from '@/pages/SettingsPage';
 
 function currentRoute(): RouteId {
   const hash = window.location.hash.replace('#', '');
@@ -37,6 +38,7 @@ export function App() {
         {route === 'sport' && <SportPage />}
         {route === 'social' && <SocialPage />}
         {route === 'explorer' && <ExplorerPage />}
+        {route === 'settings' && <SettingsPage />}
       </main>
     </div>
   );

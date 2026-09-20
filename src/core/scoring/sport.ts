@@ -5,7 +5,10 @@
 import type { Signal } from './types';
 
 export interface DisciplineHrTrend {
-  discipline: 'CrossFit' | 'Running';
+  /** Nom de la discipline tel qu'il apparaît dans la source réelle (Strava) —
+   * plus restreint aux seuls CrossFit/Running de la Phase 0 mock, une fois
+   * branché sur les vraies données. */
+  discipline: string;
   avgHrRecent: number; // moyenne des 5 dernières séances
   avgHrBaseline: number; // moyenne des 20 séances précédentes
 }
@@ -92,9 +95,10 @@ export function scoreSport(input: SportScoringInput): Signal[] {
     const delta = trend.avgHrRecent - trend.avgHrBaseline;
     if (Math.abs(delta) >= DISCIPLINE_HAUSSE_BPM) {
       const rising = delta > 0;
+      const slug = trend.discipline.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_');
       signals.push({
         domain: 'sport',
-        detectorId: `sport.${trend.discipline === 'CrossFit' ? 'E' : 'F'}.fc_discipline`,
+        detectorId: `sport.discipline_${slug}.fc_discipline`,
         severity: 'attention',
         score: Math.abs(delta) * 10,
         title: `${trend.discipline} — FC moyenne en ${rising ? 'hausse' : 'baisse'}`,

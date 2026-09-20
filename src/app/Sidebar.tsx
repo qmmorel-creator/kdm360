@@ -58,8 +58,19 @@ export function Sidebar({ active, onNavigate }: { active: RouteId; onNavigate: (
 
       <div className="sidebar-bottom">
         <div className="edition-badge">
-          <div className="edition-title">V0 — mock</div>
-          <div className="edition-desc">Données de démonstration, aucune source réelle branchée (voir docs/architecture/01-architecture-technique.md).</div>
+          <div className="edition-title">V0 — sources réelles</div>
+          <div className="edition-desc">Budget/Santé/Sport en direct. Social nécessite une URL dans Réglages.</div>
+        </div>
+        <div className="sidebar-links">
+          <a
+            href="#settings"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate('settings');
+            }}
+          >
+            Réglages
+          </a>
         </div>
         <div className="profile">
           <span className="profile-avatar">QM</span>

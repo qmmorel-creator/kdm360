@@ -2,16 +2,30 @@
 
 *Ref #1.*
 
-## Avertissement important — schéma Budget réel non accessible depuis cette session
+## Mise à jour — sources réelles branchées
 
-`db/schema.sql` d'OS360 ne couvre **que** la synchronisation des préférences
-(`os360_doc`, `os360_preferences`) — le fichier le dit explicitement : « les tables
-`finance_*` ne sont pas couvertes ici ». Le vrai schéma des comptes, transactions,
-catégories, budgets et patrimoine n'est donc **pas visible** depuis cette session (pas
-d'accès à la base Supabase réelle, pas de credentials). Les contrats Budget ci-dessous
-sont **inférés** de l'audit OS360, des noms de widgets (`budget.chart_sankey_monthly`,
-etc.) et des données de démonstration de la Phase 0 — **à valider contre le schéma réel
-`finance_*` avant tout branchement de source**, pas à prendre pour argent comptant.
+Les avertissements ci-dessous décrivaient un état où le schéma réel n'était pas
+accessible. Ce n'est plus le cas : les connecteurs disponibles dans une session
+ultérieure ont permis d'identifier et de brancher les sources réelles. Voir
+`src/data/*/real.ts` pour l'implémentation, et le tableau ci-dessous pour la
+correspondance avec les types `XxxSource` (conservés comme documentation du besoin,
+pas comme schéma exact — les adaptateurs réels requêtent directement les colonnes
+réelles, qui diffèrent par endroits de ce qui était inféré) :
+
+| Domaine | Source réelle | Mécanisme |
+|---|---|---|
+| Budget | Supabase, projet `kdm360` (`ftgmjaozveprnshkdosj`), tables `finance_*` | Client `@supabase/supabase-js`, clé publiable + RLS (même modèle qu'OS360) |
+| Santé | Google Sheets `santé_qm`, export CSV « Publié sur le web » (gid=0) | `fetch()` direct, CSV public par construction — mêmes URL qu'OS360 |
+| Sport | Même document, onglet « Activités Strava » (gid=1900000002) | `fetch()` direct, CSV public — séances synchronisées depuis Strava |
+| Social | Pont Apps Script (`fichier.gs`, même contrat JSON) | URL **non codée en dur** — vient des réglages utilisateur (`src/app/settings.ts`, page Réglages), jamais commitée : accès en écriture non authentifié côté OS360 (finding D1 de l'audit), et données réelles (contacts, adresses) |
+
+Le besoin de sommeil (`sleepNeedMin`) n'existe dans aucune source réelle trouvée —
+valeur fixe de repère (8h) utilisée en attendant, signalée comme estimation dans l'UI
+plutôt que présentée comme une mesure.
+
+La « charge de séance » Sport (utilisée par le moteur de score, détecteurs A/D/E/F)
+n'a pas d'équivalent direct dans les données Strava réelles (pas de TRIMP/TSS calculé)
+— approximée par la durée en minutes, documenté dans `src/domains/sport/index.ts`.
 
 ## Principe général
 

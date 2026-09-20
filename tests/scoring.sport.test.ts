@@ -42,8 +42,8 @@ describe('scoreSport', () => {
         { discipline: 'Running', avgHrRecent: 150, avgHrBaseline: 150 },
       ],
     });
-    expect(signals.find((s) => s.detectorId === 'sport.E.fc_discipline')).toBeDefined();
-    expect(signals.find((s) => s.detectorId === 'sport.F.fc_discipline')).toBeUndefined();
+    expect(signals.find((s) => s.detectorId === 'sport.discipline_crossfit.fc_discipline')).toBeDefined();
+    expect(signals.find((s) => s.detectorId === 'sport.discipline_running.fc_discipline')).toBeUndefined();
   });
 
   it('ne signale rien sur un profil stable', () => {
