@@ -1,0 +1,46 @@
+name: "Demande d'amélioration / nouvelle fonctionnalité"
+description: Signaler un problème ou demander une évolution sur KDM360
+labels: ["statut:backlog"]
+body:
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone concernée
+      options:
+        - "zone:budget"
+        - "zone:sante"
+        - "zone:sport"
+        - "zone:social"
+        - "zone:explorer"
+        - "zone:design"
+        - "zone:data"
+        - "zone:deploiement"
+        - "zone:autre"
+    validations:
+      required: true
+  - type: textarea
+    id: contexte
+    attributes:
+      label: Contexte
+      description: Que se passe-t-il aujourd'hui ?
+    validations:
+      required: true
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Comportement attendu
+    validations:
+      required: true
+  - type: textarea
+    id: captures
+    attributes:
+      label: Captures d'écran
+      description: Glisser-déposer directement dans ce champ.
+  - type: dropdown
+    id: priorite
+    attributes:
+      label: Priorité
+      options:
+        - Basse
+        - Normale
+        - Haute
