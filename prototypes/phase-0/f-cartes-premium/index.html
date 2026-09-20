@@ -265,6 +265,8 @@ tr:last-child td{border-bottom:none;}
 .contact-meta{font-size:11.5px;color:var(--gray);margin-top:1px;}
 .contact-status{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
 
+.preview-box{background:var(--bg);border-radius:var(--radius-sm);padding:8px;}
+
 .heatmap{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:5px;}
 .heat-cell{aspect-ratio:1;border-radius:4px;background:var(--teal);}
 .heat-labels{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:5px;}
@@ -667,6 +669,11 @@ tr:last-child td{border-bottom:none;}
             <div><div class="ministat-value">15,2 %</div><div class="ministat-label">Masse grasse</div></div>
             <div><div class="ministat-value">61,8 kg</div><div class="ministat-label">Masse musculaire</div></div>
           </div>
+          <div class="metric-name" style="margin:14px 0 2px;">Poids — 90 derniers jours</div>
+          <div id="health-weight-trend"></div>
+          <div class="card-foot">
+            <span>Aire teintée = zone sous la moyenne 90 jours. Tendance légèrement baissière.</span>
+          </div>
         </div>
 
         <div class="card">
@@ -680,6 +687,36 @@ tr:last-child td{border-bottom:none;}
           <div id="health-nutrition-bars"></div>
           <div class="card-foot">
             <span>2 340 kcal consommées, objectif 2 400 kcal.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Récupération — 7 derniers jours</div>
+              <div class="card-title-sub">Score quotidien Whoop</div>
+            </div>
+            <span class="badge badge-coral">−12 pts vs hier</span>
+          </div>
+          <div id="health-recovery-history"></div>
+          <div class="card-foot">
+            <span>83 % avant-hier → 71 % aujourd'hui, après la compétition CrossFit.</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Sommeil — 7 dernières nuits</div>
+              <div class="card-title-sub">Durée par nuit vs besoin</div>
+            </div>
+            <span class="badge badge-neutral">Besoin : 7h50</span>
+          </div>
+          <div id="health-sleep-history"></div>
+          <div class="card-foot">
+            <span>Repère pointillé = besoin de sommeil calculé.</span>
           </div>
         </div>
       </div>
@@ -722,6 +759,7 @@ tr:last-child td{border-bottom:none;}
           <div class="disc-row"><span class="disc-name">Course</span><div class="disc-track"><div class="disc-fill" style="width:30%;background:#3f7a6a;"></div></div><span class="disc-pct">30 %</span></div>
           <div class="disc-row"><span class="disc-name">Vélo</span><div class="disc-track"><div class="disc-fill" style="width:15%;background:#7fa89a;"></div></div><span class="disc-pct">15 %</span></div>
           <div class="disc-row"><span class="disc-name">Trail</span><div class="disc-track"><div class="disc-fill" style="width:10%;background:#b6d0c7;"></div></div><span class="disc-pct">10 %</span></div>
+          <div id="sport-monthly-goal" style="margin-top:16px;padding-top:13px;border-top:1px solid var(--border);"></div>
           <div class="card-foot">
             <span>Régularité : 4,2 séances/semaine en moyenne sur 12 semaines — tendance stable.</span>
           </div>
@@ -755,6 +793,41 @@ tr:last-child td{border-bottom:none;}
         </div>
         <div id="sport-history"></div>
         <div class="card-foot"><span>Creux en février (9h), montée continue jusqu'au pic estival.</span></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:14px;">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Régularité</div>
+              <div class="card-title-sub">Séances par semaine — 12 dernières semaines</div>
+            </div>
+            <span class="badge badge-teal">4,2 / sem. en moyenne</span>
+          </div>
+          <div id="sport-regularity"></div>
+          <div class="card-foot"><span>Tendance stable, pas de semaine blanche sur la période.</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Records personnels</div>
+              <div class="card-title-sub">Meilleures performances enregistrées</div>
+            </div>
+            <span class="badge badge-neutral">5 records</span>
+          </div>
+          <table>
+            <thead><tr><th>Mouvement / Format</th><th>Record</th><th style="text-align:right;">Date</th></tr></thead>
+            <tbody>
+              <tr><td>Back Squat 1RM</td><td><b>142 kg</b></td><td style="text-align:right;">Mai 2026</td></tr>
+              <tr><td>5 km course</td><td><b>21:14</b></td><td style="text-align:right;">Juil. 2026</td></tr>
+              <tr><td>Deadlift 1RM</td><td><b>175 kg</b></td><td style="text-align:right;">Avr. 2026</td></tr>
+              <tr><td>Fran (CrossFit)</td><td><b>4:02</b></td><td style="text-align:right;">Sept. 2026</td></tr>
+              <tr><td>D+ sur 90 min (vélo)</td><td><b>1 240 m</b></td><td style="text-align:right;">Août 2026</td></tr>
+            </tbody>
+          </table>
+          <div class="card-foot"><span>3 records battus au cours des 6 derniers mois.</span></div>
+        </div>
       </div>
     </section>
 
@@ -805,31 +878,82 @@ tr:last-child td{border-bottom:none;}
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" style="margin-bottom:18px;">
         <div class="card-head">
           <div>
-            <div class="card-title">Fiche contact</div>
-            <div class="card-title-sub">Camille</div>
+            <div class="card-title">Visualisations du réseau</div>
+            <div class="card-title-sub">Trois façons d'explorer vos relations</div>
           </div>
-          <span class="badge badge-neutral">Actifs</span>
+          <span class="badge badge-neutral">3 vues</span>
         </div>
-        <div class="fiche-top">
-          <div class="contact-avatar" style="width:44px;height:44px;font-size:15px;">C</div>
+        <div class="grid grid-3">
           <div>
-            <div class="contact-name" style="font-size:16px;">Camille</div>
-            <div class="contact-meta">Cercle Proche · Importance haute</div>
+            <div class="metric-top" style="margin-bottom:8px;"><span class="metric-name">Radar relationnel</span><span class="badge badge-teal">Aperçu</span></div>
+            <div class="preview-box" id="social-radar-preview"></div>
+            <div class="watch-desc" style="margin-top:8px;">Chaque point est un contact, positionné selon l'ancienneté du dernier lien et coloré par cercle.</div>
+          </div>
+          <div>
+            <div class="metric-top" style="margin-bottom:8px;"><span class="metric-name">Vue géographique</span><span class="badge badge-neutral">À intégrer</span></div>
+            <div class="preview-box" id="social-geo-preview"></div>
+            <div class="watch-desc" style="margin-top:8px;">Répartition des contacts par zone géographique, pour repérer les relations éloignées à ne pas négliger.</div>
+          </div>
+          <div>
+            <div class="metric-top" style="margin-bottom:8px;"><span class="metric-name">Réseau</span><span class="badge badge-neutral">À intégrer</span></div>
+            <div class="preview-box" id="social-graph-preview"></div>
+            <div class="watch-desc" style="margin-top:8px;">Graphe des connexions entre contacts, pour visualiser les ponts et les groupes sociaux.</div>
           </div>
         </div>
-        <div class="fiche-facts">
-          <div><div class="fiche-fact-label">Dernier contact</div><div class="fiche-fact-value">Il y a 30 jours (appel)</div></div>
-          <div><div class="fiche-fact-label">Historique</div><div class="fiche-fact-value">14 interactions / 12 mois</div></div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Fiche contact</div>
+              <div class="card-title-sub">Camille</div>
+            </div>
+            <span class="badge badge-neutral">Actifs</span>
+          </div>
+          <div class="fiche-top">
+            <div class="contact-avatar" style="width:44px;height:44px;font-size:15px;">C</div>
+            <div>
+              <div class="contact-name" style="font-size:16px;">Camille</div>
+              <div class="contact-meta">Cercle Proche · Importance haute</div>
+            </div>
+          </div>
+          <div class="fiche-facts">
+            <div><div class="fiche-fact-label">Dernier contact</div><div class="fiche-fact-value">Il y a 30 jours (appel)</div></div>
+            <div><div class="fiche-fact-label">Historique</div><div class="fiche-fact-value">14 interactions / 12 mois</div></div>
+          </div>
+          <div class="metric-name" style="margin-bottom:2px;">Interactions par mois</div>
+          <div class="heatmap" id="contact-heatmap"></div>
+          <div class="heat-labels">
+            <span>O</span><span>N</span><span>D</span><span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span>
+          </div>
+          <div class="card-foot"><span>Creux net observé en juillet–août.</span></div>
         </div>
-        <div class="metric-name" style="margin-bottom:2px;">Interactions par mois</div>
-        <div class="heatmap" id="contact-heatmap"></div>
-        <div class="heat-labels">
-          <span>O</span><span>N</span><span>D</span><span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Historique des interactions</div>
+              <div class="card-title-sub">Camille — 6 derniers échanges</div>
+            </div>
+            <span class="badge badge-neutral">14 / 12 mois</span>
+          </div>
+          <table>
+            <thead><tr><th>Date</th><th>Type</th><th style="text-align:right;">Durée / note</th></tr></thead>
+            <tbody>
+              <tr><td>21/08</td><td><span class="tag">Appel</span></td><td style="text-align:right;">18 min</td></tr>
+              <tr><td>02/08</td><td><span class="tag">Message</span></td><td style="text-align:right;">Échange court</td></tr>
+              <tr><td>14/07</td><td><span class="tag">Repas</span></td><td style="text-align:right;">1h30</td></tr>
+              <tr><td>28/06</td><td><span class="tag">Appel</span></td><td style="text-align:right;">25 min</td></tr>
+              <tr><td>09/06</td><td><span class="tag">Message</span></td><td style="text-align:right;">Échange court</td></tr>
+              <tr><td>22/05</td><td><span class="tag">Visite</span></td><td style="text-align:right;">2h15</td></tr>
+            </tbody>
+          </table>
+          <div class="card-foot"><span>Rythme cible : un lien tous les 21 jours pour le cercle Proche.</span></div>
         </div>
-        <div class="card-foot"><span>Creux net observé en juillet–août.</span></div>
       </div>
     </section>
 
@@ -995,6 +1119,185 @@ tr:last-child td{border-bottom:none;}
     el.innerHTML = vals.map(function(v){
       return '<div class="heat-cell" style="background:rgba(63,122,106,'+v+');" title="Intensité: '+Math.round(v*100)+'%"></div>';
     }).join('');
+  })();
+
+  /* ---------- HEALTH: weight trend, 90 days (hand-built line chart, budget-trajectory style) ---------- */
+  (function(){
+    var el = document.getElementById('health-weight-trend');
+    if(!el) return;
+    var labels = ['J-90','J-75','J-60','J-45','J-30','J-15','J-0'];
+    var kg = [79.1,78.9,79.3,78.8,78.6,78.7,78.4];
+    var minK = 78.0, maxK = 79.5;
+    var x0 = 40, x1 = 660, y0 = 20, y1 = 140;
+    var pts = kg.map(function(v,i){
+      var x = x0 + (x1-x0) * (i/(kg.length-1));
+      var y = y1 - (v-minK)/(maxK-minK) * (y1-y0);
+      return [x,y];
+    });
+    var line = pts.map(function(p,i){ return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+    var area = line + ' L'+x1+','+y1+' L'+x0+','+y1+' Z';
+    var markers = pts.map(function(p){ return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.4" fill="#fff" stroke="#3f7a6a" stroke-width="2"/>'; }).join('');
+    var xlabels = pts.map(function(p,i){ return '<text x="'+p[0].toFixed(1)+'" y="158" font-size="10.5" fill="#9a9d94" text-anchor="middle" font-family="Inter,sans-serif">'+labels[i]+'</text>'; }).join('');
+    var svg = '<svg width="100%" height="170" viewBox="0 0 700 170" role="img" aria-label="Poids sur les 90 derniers jours">' +
+      '<line x1="'+x0+'" y1="'+y1+'" x2="'+x1+'" y2="'+y1+'" stroke="#E7E2D6" stroke-width="1"/>' +
+      '<path d="'+area+'" fill="#3f7a6a" fill-opacity="0.10"/>' +
+      '<path d="'+line+'" fill="none" stroke="#3f7a6a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>' +
+      markers +
+      '<text x="'+x0+'" y="14" font-size="11.5" font-weight="700" fill="#2b5044" font-family="Inter,sans-serif">79,1 kg</text>' +
+      '<text x="'+x1+'" y="14" font-size="11.5" font-weight="700" fill="#2b5044" text-anchor="end" font-family="Inter,sans-serif">78,4 kg</text>' +
+      xlabels +
+      '</svg>';
+    el.innerHTML = svg;
+  })();
+
+  /* ---------- HEALTH: recovery bar chart, 7 days ---------- */
+  (function(){
+    var el = document.getElementById('health-recovery-history');
+    if(!el) return;
+    var labels = ['J-6','J-5','J-4','J-3','J-2','Hier','Auj.'];
+    var vals = [76,80,74,79,83,83,71];
+    var x0 = 40, x1 = 660, y1 = 150, scale = 120/100;
+    var slot = (x1-x0)/vals.length, barW = 46;
+    var bars = vals.map(function(v,i){
+      var x = x0 + slot*i + (slot-barW)/2;
+      var h = v*scale;
+      var y = y1 - h;
+      var isLast = i === vals.length-1;
+      var color = isLast ? '#c17552' : '#3f7a6a';
+      return '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW+'" height="'+h.toFixed(1)+'" rx="5" fill="'+color+'" fill-opacity="'+(isLast?1:0.78)+'"/>' +
+        '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-8).toFixed(1)+'" font-size="10.5" fill="'+(isLast?'#c17552':'#6b7268')+'" font-weight="'+(isLast?700:500)+'" text-anchor="middle" font-family="Inter,sans-serif">'+v+' %</text>' +
+        '<text x="'+(x+barW/2).toFixed(1)+'" y="168" font-size="10.5" fill="#9a9d94" text-anchor="middle" font-family="Inter,sans-serif">'+labels[i]+'</text>';
+    }).join('');
+    el.innerHTML = '<svg width="100%" height="180" viewBox="0 0 700 180" role="img" aria-label="Recovery quotidien sur 7 jours">' +
+      '<line x1="'+x0+'" y1="'+y1+'" x2="'+x1+'" y2="'+y1+'" stroke="#E7E2D6" stroke-width="1"/>' + bars + '</svg>';
+  })();
+
+  /* ---------- HEALTH: sleep duration bar chart, 7 nights ---------- */
+  (function(){
+    var el = document.getElementById('health-sleep-history');
+    if(!el) return;
+    var labels = ['J-6','J-5','J-4','J-3','J-2','Hier','Auj.'];
+    var hrs = [7.4,6.9,7.6,7.1,6.5,7.2,6.7];
+    var need = 7.83;
+    var x0 = 40, x1 = 660, y1 = 150, y0 = 20, maxH = 9;
+    var scale = (y1-y0)/maxH;
+    var slot = (x1-x0)/hrs.length, barW = 46;
+    var needY = y1 - need*scale;
+    var bars = hrs.map(function(v,i){
+      var x = x0 + slot*i + (slot-barW)/2;
+      var h = v*scale;
+      var y = y1 - h;
+      var color = v < need ? '#c17552' : '#3f7a6a';
+      var hh = Math.floor(v), mm = Math.round((v-hh)*60);
+      return '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW+'" height="'+h.toFixed(1)+'" rx="5" fill="'+color+'" fill-opacity="0.8"/>' +
+        '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-8).toFixed(1)+'" font-size="10" fill="#6b7268" text-anchor="middle" font-family="Inter,sans-serif">'+hh+'h'+(mm<10?'0':'')+mm+'</text>' +
+        '<text x="'+(x+barW/2).toFixed(1)+'" y="168" font-size="10.5" fill="#9a9d94" text-anchor="middle" font-family="Inter,sans-serif">'+labels[i]+'</text>';
+    }).join('');
+    el.innerHTML = '<svg width="100%" height="180" viewBox="0 0 700 180" role="img" aria-label="Durée de sommeil sur 7 nuits">' +
+      '<line x1="'+x0+'" y1="'+y1+'" x2="'+x1+'" y2="'+y1+'" stroke="#E7E2D6" stroke-width="1"/>' +
+      '<line x1="'+x0+'" y1="'+needY.toFixed(1)+'" x2="'+x1+'" y2="'+needY.toFixed(1)+'" stroke="#9a9d94" stroke-width="1.4" stroke-dasharray="3,3"/>' +
+      bars + '</svg>';
+  })();
+
+  /* ---------- SPORT: monthly goal progress (1h/day excl. vélo électrique) ---------- */
+  (function(){
+    var el = document.getElementById('sport-monthly-goal');
+    if(!el) return;
+    var doneH = 19, doneM = 4, goalH = 30;
+    var pct = Math.round((doneH+doneM/60)/goalH*100);
+    el.innerHTML = metricRow('Objectif mensuel — 1h/jour (hors vélo électrique)', pct, 100, false,
+      '<b>'+doneH+'h'+(doneM<10?'0':'')+doneM+'</b> / ~'+goalH+'h · '+pct+' %');
+  })();
+
+  /* ---------- SPORT: regularity bar chart, 12 weeks ---------- */
+  (function(){
+    var el = document.getElementById('sport-regularity');
+    if(!el) return;
+    var vals = [4,5,3,4,4,5,4,3,4,5,4,4];
+    var x0 = 40, x1 = 660, y1 = 150, y0 = 20, maxV = 6;
+    var scale = (y1-y0)/maxV;
+    var avgY = y1 - 4.2*scale;
+    var slot = (x1-x0)/vals.length, barW = 32;
+    var bars = vals.map(function(v,i){
+      var x = x0 + slot*i + (slot-barW)/2;
+      var h = v*scale;
+      var y = y1 - h;
+      return '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW+'" height="'+h.toFixed(1)+'" rx="5" fill="#3f7a6a" fill-opacity="0.78"/>' +
+        '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-8).toFixed(1)+'" font-size="10.5" fill="#6b7268" text-anchor="middle" font-family="Inter,sans-serif">'+v+'</text>' +
+        '<text x="'+(x+barW/2).toFixed(1)+'" y="168" font-size="9.5" fill="#9a9d94" text-anchor="middle" font-family="Inter,sans-serif">S-'+(vals.length-1-i)+'</text>';
+    }).join('');
+    el.innerHTML = '<svg width="100%" height="180" viewBox="0 0 700 180" role="img" aria-label="Séances par semaine sur 12 semaines">' +
+      '<line x1="'+x0+'" y1="'+y1+'" x2="'+x1+'" y2="'+y1+'" stroke="#E7E2D6" stroke-width="1"/>' +
+      '<line x1="'+x0+'" y1="'+avgY.toFixed(1)+'" x2="'+x1+'" y2="'+avgY.toFixed(1)+'" stroke="#9a9d94" stroke-width="1.4" stroke-dasharray="3,3"/>' +
+      '<text x="'+x1+'" y="'+(avgY-5).toFixed(1)+'" font-size="10" fill="#9a9d94" text-anchor="end" font-family="Inter,sans-serif">moy. 4,2</text>' +
+      bars + '</svg>';
+  })();
+
+  /* ---------- SOCIAL: radar relationnel preview (concentric circles, one point per contact) ---------- */
+  (function(){
+    var el = document.getElementById('social-radar-preview');
+    if(!el) return;
+    var cx = 100, cy = 90;
+    var rings = [
+      {r:22, color:'#2b5044', label:'Proche', n:6},
+      {r:42, color:'#3f7a6a', label:'Régulier', n:12},
+      {r:62, color:'#c9976f', label:'Occasionnel', n:11},
+      {r:80, color:'#9a9d94', label:'Dormant', n:5}
+    ];
+    var circles = rings.map(function(r){ return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r.r+'" fill="none" stroke="#E7E2D6" stroke-width="1"/>'; }).join('');
+    var seed = 1;
+    function rand(){ seed = (seed*9301+49297) % 233280; return seed/233280; }
+    var dots = rings.map(function(r){
+      var out = '';
+      for(var i=0;i<r.n;i++){
+        var a = (i/r.n)*Math.PI*2 + rand()*0.5;
+        var rr = r.r - 6 - rand()*10;
+        var x = cx + rr*Math.cos(a);
+        var y = cy + rr*Math.sin(a);
+        out += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.2" fill="'+r.color+'"/>';
+      }
+      return out;
+    }).join('');
+    var legend = rings.map(function(r){ return '<span class="legend-item"><span class="legend-dot" style="background:'+r.color+';"></span>'+r.label+'</span>'; }).join('');
+    el.innerHTML = '<svg width="100%" height="182" viewBox="0 0 200 182" role="img" aria-label="Aperçu du radar relationnel">' +
+      circles + dots + '<circle cx="'+cx+'" cy="'+cy+'" r="2" fill="#1a2420"/>' +
+      '</svg><div class="wealth-legend" style="margin-top:6px;justify-content:center;">'+legend+'</div>';
+  })();
+
+  /* ---------- SOCIAL: geographic view preview (abstract grid) ---------- */
+  (function(){
+    var el = document.getElementById('social-geo-preview');
+    if(!el) return;
+    var pts = [
+      [30,30,'#2b5044'],[70,20,'#3f7a6a'],[120,45,'#3f7a6a'],[160,25,'#c9976f'],
+      [45,70,'#3f7a6a'],[95,80,'#2b5044'],[150,75,'#c9976f'],[25,110,'#9a9d94'],
+      [80,120,'#3f7a6a'],[135,115,'#3f7a6a'],[170,105,'#c9976f'],[60,145,'#c9976f']
+    ];
+    var grid = '';
+    for(var gx=20; gx<=180; gx+=20){ grid += '<line x1="'+gx+'" y1="10" x2="'+gx+'" y2="160" stroke="#E7E2D6" stroke-width="1"/>'; }
+    for(var gy=10; gy<=160; gy+=25){ grid += '<line x1="20" y1="'+gy+'" x2="180" y2="'+gy+'" stroke="#E7E2D6" stroke-width="1"/>'; }
+    var dots = pts.map(function(p){ return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+p[2]+'" fill-opacity="0.85"/>'; }).join('');
+    el.innerHTML = '<svg width="100%" height="182" viewBox="0 0 200 182" role="img" aria-label="Aperçu de la vue géographique">' +
+      grid + dots + '</svg>';
+  })();
+
+  /* ---------- SOCIAL: network graph preview (nodes + edges) ---------- */
+  (function(){
+    var el = document.getElementById('social-graph-preview');
+    if(!el) return;
+    var nodes = [
+      [100,25,7,'#2b5044'],[45,60,5,'#3f7a6a'],[150,55,5,'#3f7a6a'],
+      [30,115,4,'#c9976f'],[90,100,6,'#2b5044'],[150,115,4,'#c9976f'],
+      [65,150,4,'#9a9d94'],[130,150,4,'#c9976f']
+    ];
+    var edges = [[0,1],[0,2],[1,3],[1,4],[2,4],[2,5],[4,6],[4,7],[0,4]];
+    var lines = edges.map(function(e){
+      var a = nodes[e[0]], b = nodes[e[1]];
+      return '<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="#c8c2b2" stroke-width="1.3"/>';
+    }).join('');
+    var dots = nodes.map(function(n){ return '<circle cx="'+n[0]+'" cy="'+n[1]+'" r="'+n[2]+'" fill="'+n[3]+'"/>'; }).join('');
+    el.innerHTML = '<svg width="100%" height="182" viewBox="0 0 200 182" role="img" aria-label="Aperçu du réseau relationnel">' +
+      lines + dots + '</svg>';
   })();
 })();
 </script>
