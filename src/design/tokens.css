@@ -1,0 +1,47 @@
+/* KDM360 — tokens de design, portés depuis prototypes/phase-0/f-cartes-premium
+   Voir docs/architecture/00-design-system.md — ne pas diverger sans mettre à jour ce document. */
+:root {
+  --bg: #f7f5f0;
+  --card: #ffffff;
+  --border: #e7e2d6;
+  --teal: #3f7a6a;
+  --teal-dark: #2b5044;
+  --teal-pale: #e9f1ee;
+  --teal-pale-2: rgba(63, 122, 106, 0.1);
+  --coral: #c17552;
+  --coral-pale: #f7e9e1;
+  --peach-pale: #faf0e8;
+  --ink: #1a2420;
+  --gray: #6b7268;
+  --gray-light: #9a9d94;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(26, 36, 32, 0.04), 0 1px 1px rgba(26, 36, 32, 0.03);
+  --space: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: 'Fraunces', serif; margin: 0; }
+
+a { color: var(--teal); }
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
