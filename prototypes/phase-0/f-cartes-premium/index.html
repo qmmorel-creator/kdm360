@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KDM360 — Cartes Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F5F0;
+  --card:#FFFFFF;
+  --border:#E7E2D6;
+  --teal:#3f7a6a;
+  --teal-dark:#2b5044;
+  --teal-pale:#e9f1ee;
+  --teal-pale-2:rgba(63,122,106,0.10);
+  --coral:#c17552;
+  --coral-pale:#f7e9e1;
+  --peach-pale:#faf0e8;
+  --ink:#1a2420;
+  --gray:#6b7268;
+  --gray-light:#9a9d94;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow: 0 1px 2px rgba(26,36,32,0.04), 0 1px 1px rgba(26,36,32,0.03);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Fraunces',serif;margin:0;}
+a{color:var(--teal);}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px;}
+
+.app{display:flex;min-height:100vh;}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  width:236px;
+  flex:0 0 236px;
+  background:var(--card);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  padding:26px 20px 20px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:30px;padding:0 4px;}
+.logo-mark{width:30px;height:30px;flex:0 0 30px;}
+.logo-text{display:flex;flex-direction:column;line-height:1.15;}
+.logo-name{font-weight:700;font-size:15.5px;letter-spacing:0.2px;color:var(--ink);}
+.logo-sub{font-size:9px;letter-spacing:1.4px;color:var(--gray);font-weight:600;text-transform:uppercase;margin-top:2px;}
+
+.nav-section{margin-bottom:22px;}
+.nav-label{
+  font-size:10px;letter-spacing:1.6px;text-transform:uppercase;
+  color:var(--gray-light);font-weight:700;padding:0 10px;margin-bottom:10px;
+}
+.nav-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px 9px 12px;
+  border-radius:9px;
+  border-left:3px solid transparent;
+  cursor:pointer;
+  color:var(--ink);
+  font-size:13.5px;font-weight:500;
+  background:transparent;
+  transition:background .12s ease;
+}
+.nav-item:hover{background:#faf9f6;}
+.nav-item .nav-icon{width:16px;height:16px;flex:0 0 16px;color:var(--gray);}
+.nav-item .nav-txt{flex:1;}
+.nav-item .nav-num{font-size:10.5px;color:var(--gray-light);font-weight:600;}
+.nav-item.active{
+  background:var(--teal-pale);
+  border-left:3px solid var(--teal);
+  color:var(--teal-dark);
+  font-weight:700;
+  padding-left:9px;
+}
+.nav-item.active .nav-icon{color:var(--teal-dark);}
+.nav-item.active .nav-num{color:var(--teal-dark);}
+
+.sidebar-bottom{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);}
+.edition-block{
+  background:var(--peach-pale);
+  border-radius:var(--radius-sm);
+  padding:12px 13px;
+  margin-bottom:14px;
+}
+.edition-title{font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--ink);text-transform:uppercase;display:flex;justify-content:space-between;}
+.edition-desc{font-size:11.5px;color:var(--gray);margin-top:6px;line-height:1.5;}
+.sidebar-links{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+.sidebar-link{
+  font-size:13px;color:var(--ink);padding:7px 10px;border-radius:8px;cursor:pointer;
+}
+.sidebar-link:hover{background:#faf9f6;}
+.profile{display:flex;align-items:center;gap:10px;padding:8px 6px;}
+.avatar{
+  width:34px;height:34px;border-radius:50%;background:var(--teal);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex:0 0 34px;
+}
+.profile-name{font-size:13px;font-weight:600;color:var(--ink);}
+.profile-sub{font-size:11px;color:var(--gray);}
+
+/* ---------- MAIN ---------- */
+main{flex:1;min-width:0;padding:34px 44px 60px;}
+.breadcrumb{font-size:12.5px;color:var(--gray);margin-bottom:18px;}
+.breadcrumb span.current{color:var(--ink);font-weight:600;}
+.page-head{margin-bottom:30px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;}
+.page-title{font-size:42px;font-weight:700;letter-spacing:-0.5px;line-height:1.05;}
+.page-sub{font-size:14.5px;color:var(--gray);margin-top:8px;max-width:560px;line-height:1.5;}
+.page-badge{
+  font-size:10.5px;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;
+  color:var(--gray);background:var(--peach-pale);padding:6px 11px;border-radius:20px;white-space:nowrap;
+}
+
+.view{display:none;}
+.view.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+.grid{display:grid;gap:18px;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-2{grid-template-columns:1.4fr 1fr;}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px 24px;
+  box-shadow:var(--shadow);
+}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:12px;}
+.card-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;}
+.card-title-sub{font-size:12px;color:var(--gray);margin-top:3px;font-weight:400;font-family:'Inter',sans-serif;}
+.badge{
+  font-size:9.5px;letter-spacing:0.7px;text-transform:uppercase;font-weight:700;
+  padding:4px 9px;border-radius:20px;white-space:nowrap;
+}
+.badge-neutral{background:var(--peach-pale);color:var(--gray);}
+.badge-teal{background:var(--teal-pale);color:var(--teal-dark);}
+.badge-coral{background:var(--coral-pale);color:var(--coral);}
+.card-foot{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--gray);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.card-foot a{font-weight:600;text-decoration:none;}
+.card-foot a:hover{text-decoration:underline;}
+
+/* KPI tiles */
+.kpi-tile{display:flex;flex-direction:column;gap:10px;}
+.kpi-top{display:flex;justify-content:space-between;align-items:center;}
+.kpi-label{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-light);font-weight:700;}
+.kpi-num{font-size:10.5px;color:var(--gray-light);font-weight:700;}
+.kpi-value{font-size:30px;font-weight:700;letter-spacing:-0.5px;color:var(--ink);font-family:'Fraunces',serif;}
+.kpi-meta{font-size:12.5px;color:var(--gray);display:flex;align-items:center;gap:6px;}
+.kpi-meta.up{color:var(--teal-dark);font-weight:600;}
+.kpi-meta.down{color:var(--coral);font-weight:600;}
+.kpi-spark{margin-top:2px;}
+
+/* watch list */
+.watch-list{display:flex;flex-direction:column;}
+.watch-row{
+  display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);
+}
+.watch-row:last-child{border-bottom:none;padding-bottom:2px;}
+.watch-num{font-size:11px;color:var(--gray-light);font-weight:700;width:20px;flex:0 0 20px;}
+.watch-dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px;}
+.watch-body{flex:1;min-width:0;}
+.watch-title{font-size:14px;font-weight:700;color:var(--ink);}
+.watch-desc{font-size:12.5px;color:var(--gray);margin-top:3px;line-height:1.4;}
+.watch-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;}
+.watch-value{font-size:15px;font-weight:700;}
+.watch-sub{font-size:10.5px;color:var(--gray-light);text-transform:uppercase;letter-spacing:0.4px;}
+.chevron{color:var(--gray-light);flex:0 0 14px;}
+
+/* progress bar rows */
+.metric-row{margin-bottom:20px;}
+.metric-row:last-child{margin-bottom:0;}
+.metric-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.metric-name{font-size:13.5px;font-weight:600;color:var(--ink);}
+.metric-figs{font-size:12.5px;color:var(--gray);display:flex;gap:10px;}
+.metric-figs b{color:var(--ink);font-weight:700;}
+
+.ministats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);}
+.ministat-value{font-size:19px;font-weight:700;font-family:'Fraunces',serif;}
+.ministat-label{font-size:11px;color:var(--gray);margin-top:2px;}
+
+/* activity bars (sport discipline) */
+.disc-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.disc-row:last-child{margin-bottom:0;}
+.disc-name{font-size:12.5px;font-weight:600;width:70px;flex:0 0 70px;}
+.disc-track{flex:1;height:9px;border-radius:6px;background:#f1efe8;overflow:hidden;}
+.disc-fill{height:100%;border-radius:6px;}
+.disc-pct{font-size:12.5px;font-weight:700;width:38px;text-align:right;flex:0 0 38px;}
+
+/* nutrition bars */
+.nutri-row{margin-bottom:14px;}
+.nutri-row:last-child{margin-bottom:0;}
+.nutri-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px;}
+.nutri-top b{font-weight:700;}
+.nutri-track{height:8px;border-radius:5px;background:#f1efe8;overflow:hidden;}
+.nutri-fill{height:100%;border-radius:5px;background:var(--teal);}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{
+  text-align:left;font-size:10.5px;letter-spacing:0.8px;text-transform:uppercase;color:var(--gray-light);
+  font-weight:700;padding:0 10px 10px 0;border-bottom:1px solid var(--border);
+}
+td{padding:11px 10px 11px 0;border-bottom:1px solid var(--border);color:var(--ink);}
+tr:last-child td{border-bottom:none;}
+.amount-neg{color:var(--coral);font-weight:600;}
+.amount-pos{color:var(--teal-dark);font-weight:600;}
+.tag{font-size:10.5px;font-weight:600;color:var(--gray);background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:20px;}
+
+/* locked sankey */
+.locked-card{
+  border:1.5px dashed var(--border);
+  border-radius:var(--radius);
+  background:repeating-linear-gradient(135deg, rgba(26,36,32,0.012) 0 12px, transparent 12px 24px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:44px 30px;gap:12px;min-height:220px;
+}
+.lock-icon{color:var(--gray-light);}
+.locked-text{font-size:13px;color:var(--gray);max-width:420px;line-height:1.6;}
+
+/* wealth composition */
+.wealth-bar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:14px 0 12px;}
+.wealth-legend{display:flex;gap:18px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--gray);}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px;}
+
+/* filters */
+.filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.filter-pill{
+  font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:20px;border:1px solid var(--border);
+  color:var(--gray);background:var(--card);cursor:pointer;
+}
+.filter-pill.active{background:var(--teal-dark);border-color:var(--teal-dark);color:#fff;}
+
+/* social circles */
+.circle-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:4px;}
+.circle-stat{text-align:center;padding:14px 8px;border-radius:var(--radius-sm);background:var(--bg);}
+.circle-stat .n{font-size:22px;font-weight:700;font-family:'Fraunces',serif;}
+.circle-stat .l{font-size:11px;color:var(--gray);margin-top:2px;}
+
+.contact-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border);}
+.contact-row:last-child{border-bottom:none;}
+.contact-avatar{width:38px;height:38px;border-radius:50%;background:var(--teal-pale);color:var(--teal-dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:0 0 38px;}
+.contact-body{flex:1;min-width:0;}
+.contact-name{font-size:14px;font-weight:700;}
+.contact-meta{font-size:12px;color:var(--gray);margin-top:2px;}
+.contact-status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+
+.heatmap{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;margin-top:6px;}
+.heat-cell{aspect-ratio:1;border-radius:4px;background:var(--teal);}
+.heat-labels{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;margin-top:6px;}
+.heat-labels span{font-size:9px;color:var(--gray-light);text-align:center;}
+
+.fiche-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.fiche-facts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 20px;margin-bottom:18px;}
+.fiche-fact-label{font-size:10.5px;color:var(--gray-light);text-transform:uppercase;letter-spacing:0.6px;font-weight:700;}
+.fiche-fact-value{font-size:14px;font-weight:600;margin-top:3px;}
+
+@media (max-width:1080px){
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .grid-2{grid-template-columns:1fr;}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+}
+@media (max-width:700px){
+  .app{flex-direction:column;}
+  .sidebar{
+    width:100%;flex:none;height:auto;position:relative;
+    border-right:none;border-bottom:1px solid var(--border);
+  }
+  main{padding:22px 16px 44px;}
+  .page-title{font-size:32px;}
+  .grid-4{grid-template-columns:1fr 1fr;}
+  .grid-3{grid-template-columns:1fr;}
+  .circle-stats{grid-template-columns:repeat(2,1fr);}
+  .page-head{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+        <circle cx="15" cy="15" r="13" stroke="#3f7a6a" stroke-width="1.6"/>
+        <circle cx="15" cy="15" r="7" stroke="#3f7a6a" stroke-width="1.6"/>
+        <circle cx="15" cy="15" r="2.2" fill="#3f7a6a"/>
+      </svg>
+      <div class="logo-text">
+        <span class="logo-name">KDM360</span>
+        <span class="logo-sub">Personal Intelligence</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Votre quotidien</div>
+      <ul class="nav-list">
+        <li class="nav-item active" data-view="today" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="2.4" fill="currentColor"/></svg>
+          <span class="nav-txt">Aujourd'hui</span><span class="nav-num">01</span>
+        </li>
+        <li class="nav-item" data-view="budget" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" rx="0.6" stroke="currentColor" stroke-width="1.4"/><rect x="8.5" y="6" width="3" height="11" rx="0.6" stroke="currentColor" stroke-width="1.4"/><rect x="14" y="3" width="3" height="14" rx="0.6" stroke="currentColor" stroke-width="1.4"/></svg>
+          <span class="nav-txt">Budget</span><span class="nav-num">02</span>
+        </li>
+        <li class="nav-item" data-view="health" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M3 10.5h3l1.5-4 2.5 8 1.5-5.5 1.2 1.5H17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="nav-txt">Santé</span><span class="nav-num">03</span>
+        </li>
+        <li class="nav-item" data-view="sport" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M11 2 4.5 11.5H10l-1 6.5L16 8h-5.5L11 2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          <span class="nav-txt">Sport</span><span class="nav-num">04</span>
+        </li>
+        <li class="nav-item" data-view="social" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="2.6" stroke="currentColor" stroke-width="1.4"/><circle cx="14" cy="8.5" r="2.1" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 16.5c0-2.8 2-4.5 4.5-4.5s4.5 1.7 4.5 4.5M12 13.2c2.1.2 3.5 1.7 3.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <span class="nav-txt">Social</span><span class="nav-num">05</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Exploration</div>
+      <ul class="nav-list">
+        <li class="nav-item" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.3"/><path d="M13 7 9 11l-2 2 4-1 2-4Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          <span class="nav-txt">Explorer</span>
+        </li>
+        <li class="nav-item" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M6 2.5h6L15.5 6v11.5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          <span class="nav-txt">Documents</span>
+        </li>
+        <li class="nav-item" tabindex="0" role="button">
+          <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M4 12.5 5.3 8h9.4l1.3 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="12.5" width="14" height="3.2" rx="1" stroke="currentColor" stroke-width="1.3"/><circle cx="6" cy="15.6" r="0.9" fill="currentColor"/><circle cx="14" cy="15.6" r="0.9" fill="currentColor"/></svg>
+          <span class="nav-txt">Véhicules</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="edition-block">
+        <div class="edition-title"><span>Édition claire</span><span>01</span></div>
+        <div class="edition-desc">Une direction visuelle inspirée d'un cockpit personnel clair : cartes blanches, accent sauge, hiérarchie stricte.</div>
+      </div>
+      <div class="sidebar-links">
+        <div class="sidebar-link" tabindex="0" role="button">Sources &amp; données</div>
+        <div class="sidebar-link" tabindex="0" role="button">Préférences</div>
+      </div>
+      <div class="profile">
+        <div class="avatar">QM</div>
+        <div>
+          <div class="profile-name">Quentin M.</div>
+          <div class="profile-sub">Espace personnel</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+    <div class="breadcrumb">Espace personnel <span aria-hidden="true">&rsaquo;</span> <span class="current" id="crumb-current">Aujourd'hui</span></div>
+
+    <!-- ===================== VIEW: AUJOURD'HUI ===================== -->
+    <section class="view active" data-view="today" aria-labelledby="today-title">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title" id="today-title">Aujourd'hui</h1>
+          <p class="page-sub">L'essentiel de votre journée en un coup d'œil — budget, corps, effort et relations.</p>
+        </div>
+        <span class="page-badge">Maquette · Données fictives</span>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:18px;">
+        <div class="card kpi-tile">
+          <div class="kpi-top"><span class="kpi-label">Budget du mois</span><span class="kpi-num">01</span></div>
+          <div class="kpi-value">+418 €</div>
+          <div class="kpi-meta up">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 8 5.5 3 9 8" stroke="#2b5044" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            +3 % vs mois précédent
+          </div>
+          <svg class="kpi-spark" width="100%" height="32" viewBox="0 0 160 32" preserveAspectRatio="none">
+            <polyline points="0,24 20,18 40,26 60,14 80,20 100,6 120,15 140,10 160,4" fill="none" stroke="#3f7a6a" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="card kpi-tile">
+          <div class="kpi-top"><span class="kpi-label">Recovery (Whoop)</span><span class="kpi-num">02</span></div>
+          <div class="kpi-value">71 %</div>
+          <div class="kpi-meta down">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 3 5.5 8 9 3" stroke="#c17552" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            −12 pts vs hier (83 %)
+          </div>
+          <svg class="kpi-spark" width="100%" height="32" viewBox="0 0 160 32" preserveAspectRatio="none">
+            <polyline points="0,10 20,8 40,12 60,6 80,4 100,9 120,7 140,22 160,26" fill="none" stroke="#c17552" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="card kpi-tile">
+          <div class="kpi-top"><span class="kpi-label">Charge sport · 7j</span><span class="kpi-num">03</span></div>
+          <div class="kpi-value">8,4<span style="font-size:16px;color:var(--gray);">/10</span></div>
+          <div class="kpi-meta" style="color:var(--coral);font-weight:600;">Élevée — compétition CrossFit hier</div>
+          <svg class="kpi-spark" width="100%" height="32" viewBox="0 0 160 32" preserveAspectRatio="none">
+            <polyline points="0,26 20,22 40,24 60,16 80,20 100,10 120,14 140,6 160,4" fill="none" stroke="#3f7a6a" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="card kpi-tile">
+          <div class="kpi-top"><span class="kpi-label">Social</span><span class="kpi-num">04</span></div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-meta" style="color:var(--coral);font-weight:600;">Relances en attente</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">À regarder</div>
+              <div class="card-title-sub">Un signal par domaine, celui qui mérite votre attention aujourd'hui</div>
+            </div>
+            <span class="badge badge-neutral">4 signaux</span>
+          </div>
+          <div class="watch-list">
+            <div class="watch-row">
+              <span class="watch-num">01</span>
+              <span class="watch-dot" style="background:var(--teal);"></span>
+              <div class="watch-body">
+                <div class="watch-title">Budget — Courses</div>
+                <div class="watch-desc">83 % du budget consommé à 66 % du mois écoulé.</div>
+              </div>
+              <div class="watch-right">
+                <span class="badge badge-coral">+17 pts</span>
+                <span class="watch-sub">Écart vs rythme</span>
+              </div>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="watch-row">
+              <span class="watch-num">02</span>
+              <span class="watch-dot" style="background:#7fa89a;"></span>
+              <div class="watch-body">
+                <div class="watch-title">Santé — HRV stable, strain élevé</div>
+                <div class="watch-desc">HRV 58 ms (−2 ms vs moyenne 7j) mais strain hier à 18,2.</div>
+              </div>
+              <div class="watch-right">
+                <span class="badge badge-neutral">58 ms</span>
+                <span class="watch-sub">HRV du jour</span>
+              </div>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="watch-row">
+              <span class="watch-num">03</span>
+              <span class="watch-dot" style="background:#c9976f;"></span>
+              <div class="watch-body">
+                <div class="watch-title">Sport — Open 26.3</div>
+                <div class="watch-desc">Compétition CrossFit hier, 24 min, charge 9,1.</div>
+              </div>
+              <div class="watch-right">
+                <span class="badge badge-neutral">9,1</span>
+                <span class="watch-sub">Charge séance</span>
+              </div>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="watch-row">
+              <span class="watch-num">04</span>
+              <span class="watch-dot" style="background:#a58bb0;"></span>
+              <div class="watch-body">
+                <div class="watch-title">Social — Camille</div>
+                <div class="watch-desc">Cercle proche, délai cible dépassé de 9 jours (dernier contact il y a 30 j).</div>
+              </div>
+              <div class="watch-right">
+                <span class="badge badge-coral">+9 j</span>
+                <span class="watch-sub">Au-delà du seuil</span>
+              </div>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Récupération &amp; sommeil</div>
+              <div class="card-title-sub">État physiologique du jour</div>
+            </div>
+            <span class="badge badge-teal">Whoop</span>
+          </div>
+          <div id="today-recovery-bars"></div>
+          <div class="ministats">
+            <div><div class="ministat-value">58 ms</div><div class="ministat-label">HRV (moy. 7j : 60 ms)</div></div>
+            <div><div class="ministat-value">52 bpm</div><div class="ministat-label">FC repos</div></div>
+            <div><div class="ministat-value">18,2/21</div><div class="ministat-label">Strain hier</div></div>
+          </div>
+          <div class="card-foot">
+            <span>Repère pointillé = référence (hier ou besoin).</span>
+            <a href="#" onclick="return false;">Comprendre les repères →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: BUDGET ===================== -->
+    <section class="view" data-view="budget" aria-labelledby="budget-title">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title" id="budget-title">Budget</h1>
+          <p class="page-sub">Le mois en cours, la trajectoire de trésorerie et le rythme de consommation par catégorie.</p>
+        </div>
+        <span class="page-badge">Maquette · Données fictives</span>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:18px;">
+        <div class="card kpi-tile"><div class="kpi-top"><span class="kpi-label">Revenus</span></div><div class="kpi-value">4 250 €</div><div class="kpi-meta">Ce mois-ci</div></div>
+        <div class="card kpi-tile"><div class="kpi-top"><span class="kpi-label">Dépenses</span></div><div class="kpi-value">3 832 €</div><div class="kpi-meta">Ce mois-ci</div></div>
+        <div class="card kpi-tile"><div class="kpi-top"><span class="kpi-label">Solde</span></div><div class="kpi-value" style="color:var(--teal-dark);">+418 €</div><div class="kpi-meta up">+3 % vs mois précédent</div></div>
+        <div class="card kpi-tile"><div class="kpi-top"><span class="kpi-label">Épargne</span></div><div class="kpi-value">600 €</div><div class="kpi-meta">Automatique, hors calcul dépenses</div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Trajectoire du solde</div>
+              <div class="card-title-sub">12 derniers mois</div>
+            </div>
+            <span class="badge badge-neutral">Oct. — Sept.</span>
+          </div>
+          <div id="budget-trajectory"></div>
+          <div class="card-foot">
+            <span>Aire teintée = zone positive du solde mensuel.</span>
+            <a href="#" onclick="return false;">Voir les repères →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Rythme de consommation</div>
+              <div class="card-title-sub">66 % du mois écoulé</div>
+            </div>
+            <span class="badge badge-coral">2 dérives</span>
+          </div>
+          <div id="budget-categories"></div>
+          <div class="card-foot">
+            <span>Rythme ≠ dépassement de budget.</span>
+            <a href="#" onclick="return false;">Comprendre les repères →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Patrimoine</div>
+              <div class="card-title-sub">Vue consolidée</div>
+            </div>
+            <span class="badge badge-teal">+2,1 % · 3 mois</span>
+          </div>
+          <div class="kpi-value" style="font-size:32px;">42 300 €</div>
+          <div class="wealth-bar" id="wealth-bar"></div>
+          <div class="wealth-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#2b5044;"></span>Épargne · 61 %</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#3f7a6a;"></span>Investissements · 28 %</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#a9cabf;"></span>Liquidités · 11 %</span>
+          </div>
+          <div class="card-foot" style="margin-top:18px;">
+            <table style="margin-top:2px;">
+              <thead><tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th style="text-align:right;">Montant</th></tr></thead>
+              <tbody>
+                <tr><td>18/09</td><td>Carrefour City</td><td><span class="tag">Courses</span></td><td style="text-align:right;" class="amount-neg">−42,30 €</td></tr>
+                <tr><td>17/09</td><td>Abonnement Whoop</td><td><span class="tag">Abonnements</span></td><td style="text-align:right;" class="amount-neg">−24,00 €</td></tr>
+                <tr><td>16/09</td><td>SNCF Connect</td><td><span class="tag">Transport</span></td><td style="text-align:right;" class="amount-neg">−38,50 €</td></tr>
+                <tr><td>15/09</td><td>Virement salaire</td><td><span class="tag">Revenus</span></td><td style="text-align:right;" class="amount-pos">+4 250,00 €</td></tr>
+                <tr><td>14/09</td><td>Le Petit Bistrot</td><td><span class="tag">Restaurants</span></td><td style="text-align:right;" class="amount-neg">−31,80 €</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Exploration des flux</div>
+              <div class="card-title-sub">Vue Sankey des flux financiers</div>
+            </div>
+            <span class="badge badge-neutral">Verrouillé</span>
+          </div>
+          <div class="locked-card">
+            <svg class="lock-icon" width="30" height="30" viewBox="0 0 24 24" fill="none"><rect x="5" y="10.5" width="14" height="9.5" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></svg>
+            <p class="locked-text">Sankey OS360 — rendu figé, intégration pixel-identique prévue (voir docs/phase-0/02-sankey-reference.md)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: SANTÉ ===================== -->
+    <section class="view" data-view="health" aria-labelledby="health-title">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title" id="health-title">Santé</h1>
+          <p class="page-sub">Récupération, sommeil, composition corporelle et nutrition — l'état du corps au quotidien.</p>
+        </div>
+        <span class="page-badge">Maquette · Données fictives</span>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Récupération</div>
+              <div class="card-title-sub">Indicateurs physiologiques du jour</div>
+            </div>
+            <span class="badge badge-teal">Whoop</span>
+          </div>
+          <div id="health-recovery-bars"></div>
+          <div class="ministats">
+            <div><div class="ministat-value">97 %</div><div class="ministat-label">SpO2</div></div>
+            <div><div class="ministat-value">+0,2 °C</div><div class="ministat-label">Température vs baseline</div></div>
+            <div><div class="ministat-value">18,2/21</div><div class="ministat-label">Strain hier</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Sommeil</div>
+              <div class="card-title-sub">Nuit du 19 au 20 septembre</div>
+            </div>
+            <span class="badge badge-neutral">6h42 / 7h50</span>
+          </div>
+          <div id="health-sleep-bars"></div>
+          <div class="ministats">
+            <div><div class="ministat-value">91 %</div><div class="ministat-label">Efficacité</div></div>
+            <div><div class="ministat-value">22 %</div><div class="ministat-label">Sommeil REM</div></div>
+            <div><div class="ministat-value">18 %</div><div class="ministat-label">Sommeil profond</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Composition corporelle</div>
+              <div class="card-title-sub">Dernière mesure</div>
+            </div>
+            <span class="badge badge-neutral">30 jours</span>
+          </div>
+          <div class="ministats" style="border-top:none;padding-top:0;margin-top:0;">
+            <div><div class="ministat-value">78,4 kg</div><div class="ministat-label">Poids (−0,3 kg / 30j)</div></div>
+            <div><div class="ministat-value">15,2 %</div><div class="ministat-label">Masse grasse</div></div>
+            <div><div class="ministat-value">61,8 kg</div><div class="ministat-label">Masse musculaire</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Nutrition</div>
+              <div class="card-title-sub">Hier</div>
+            </div>
+            <span class="badge badge-neutral">Nutrition</span>
+          </div>
+          <div id="health-nutrition-bars"></div>
+          <div class="card-foot">
+            <span>2 340 kcal consommées, objectif 2 400 kcal.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: SPORT ===================== -->
+    <section class="view" data-view="sport" aria-labelledby="sport-title">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title" id="sport-title">Sport</h1>
+          <p class="page-sub">Charge, répartition par discipline et régularité de l'entraînement.</p>
+        </div>
+        <span class="page-badge">Maquette · Données fictives</span>
+      </div>
+
+      <div class="filters">
+        <button class="filter-pill active" type="button">7 jours</button>
+        <button class="filter-pill" type="button">28 jours</button>
+        <button class="filter-pill" type="button">Mois en cours</button>
+        <button class="filter-pill" type="button">Année</button>
+        <button class="filter-pill" type="button">Historique complet</button>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Activité &amp; régularité</div>
+              <div class="card-title-sub">7 derniers jours</div>
+            </div>
+            <span class="badge badge-teal">Sport</span>
+          </div>
+          <div class="ministats" style="border-top:none;padding-top:0;margin-top:0;margin-bottom:18px;">
+            <div><div class="ministat-value">5</div><div class="ministat-label">Séances / 7j</div></div>
+            <div><div class="ministat-value">41,2</div><div class="ministat-label">Charge cumulée</div></div>
+            <div><div class="ministat-value">4h52</div><div class="ministat-label">Durée totale</div></div>
+          </div>
+          <div class="metric-name" style="margin-bottom:12px;">Répartition par discipline — 28 jours</div>
+          <div class="disc-row"><span class="disc-name">CrossFit</span><div class="disc-track"><div class="disc-fill" style="width:45%;background:#2b5044;"></div></div><span class="disc-pct">45 %</span></div>
+          <div class="disc-row"><span class="disc-name">Course</span><div class="disc-track"><div class="disc-fill" style="width:30%;background:#3f7a6a;"></div></div><span class="disc-pct">30 %</span></div>
+          <div class="disc-row"><span class="disc-name">Vélo</span><div class="disc-track"><div class="disc-fill" style="width:15%;background:#7fa89a;"></div></div><span class="disc-pct">15 %</span></div>
+          <div class="disc-row"><span class="disc-name">Trail</span><div class="disc-track"><div class="disc-fill" style="width:10%;background:#b6d0c7;"></div></div><span class="disc-pct">10 %</span></div>
+          <div class="card-foot">
+            <span>Régularité : 4,2 séances/semaine en moyenne sur 12 semaines — tendance stable.</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Dernière séance</div>
+              <div class="card-title-sub">CrossFit — Open 26.3</div>
+            </div>
+            <span class="badge badge-coral">Compétition</span>
+          </div>
+          <div class="kpi-value" style="font-size:30px;">24 min</div>
+          <div class="ministats" style="margin-top:16px;">
+            <div><div class="ministat-value">9,1</div><div class="ministat-label">Charge</div></div>
+            <div><div class="ministat-value">168 bpm</div><div class="ministat-label">FC moyenne</div></div>
+            <div><div class="ministat-value">184 bpm</div><div class="ministat-label">FC pic</div></div>
+          </div>
+          <div class="card-foot"><span>Séance d'hier, comptée dans la charge des 7 derniers jours.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Historique du volume</div>
+            <div class="card-title-sub">12 derniers mois — heures d'entraînement</div>
+          </div>
+          <span class="badge badge-neutral">Pic : juillet · 22h</span>
+        </div>
+        <div id="sport-history"></div>
+        <div class="card-foot"><span>Creux en février (9h), montée continue jusqu'au pic estival.</span></div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: SOCIAL ===================== -->
+    <section class="view" data-view="social" aria-labelledby="social-title">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title" id="social-title">Social</h1>
+          <p class="page-sub">Le réseau relationnel et les liens à entretenir avant qu'ils ne se distendent.</p>
+        </div>
+        <span class="page-badge">Maquette · Données fictives</span>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Réseau</div>
+              <div class="card-title-sub">Répartition par cercle</div>
+            </div>
+            <span class="badge badge-teal">34 contacts</span>
+          </div>
+          <div class="circle-stats">
+            <div class="circle-stat"><div class="n">6</div><div class="l">Proche</div></div>
+            <div class="circle-stat"><div class="n">12</div><div class="l">Régulier</div></div>
+            <div class="circle-stat"><div class="n">11</div><div class="l">Occasionnel</div></div>
+            <div class="circle-stat"><div class="n">5</div><div class="l">Dormant</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Liens à entretenir</div>
+              <div class="card-title-sub">Contacts au-delà de leur délai cible</div>
+            </div>
+            <span class="badge badge-coral">4 contacts</span>
+          </div>
+          <table>
+            <thead><tr><th>Contact / Cercle</th><th>Dernier lien</th><th>Situation</th></tr></thead>
+            <tbody>
+              <tr><td><b>Camille</b> · Proche</td><td>Il y a 30 j</td><td><span class="badge badge-coral">Seuil 21 j dépassé</span></td></tr>
+              <tr><td><b>Thomas</b> · Régulier</td><td>Il y a 45 j</td><td><span class="badge badge-coral">En attente réponse · 12 j</span></td></tr>
+              <tr><td><b>Léa</b> · Proche</td><td>Il y a 25 j</td><td><span class="badge badge-coral">Seuil 21 j dépassé</span></td></tr>
+              <tr><td><b>Marc</b> · Régulier</td><td>Il y a 40 j</td><td><span class="badge badge-coral">Seuil 35 j dépassé</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Fiche contact</div>
+            <div class="card-title-sub">Camille</div>
+          </div>
+          <span class="badge badge-neutral">Actifs</span>
+        </div>
+        <div class="fiche-top">
+          <div class="contact-avatar" style="width:44px;height:44px;font-size:15px;">C</div>
+          <div>
+            <div class="contact-name" style="font-size:16px;">Camille</div>
+            <div class="contact-meta">Cercle Proche · Importance haute</div>
+          </div>
+        </div>
+        <div class="fiche-facts">
+          <div><div class="fiche-fact-label">Dernier contact</div><div class="fiche-fact-value">Il y a 30 jours (appel)</div></div>
+          <div><div class="fiche-fact-label">Historique</div><div class="fiche-fact-value">14 interactions / 12 mois</div></div>
+        </div>
+        <div class="metric-name" style="margin-bottom:2px;">Interactions par mois</div>
+        <div class="heatmap" id="contact-heatmap"></div>
+        <div class="heat-labels">
+          <span>O</span><span>N</span><span>D</span><span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span>
+        </div>
+        <div class="card-foot"><span>Creux net observé en juillet–août.</span></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  /* ---------- Navigation ---------- */
+  var navItems = document.querySelectorAll('.nav-item[data-view]');
+  var views = document.querySelectorAll('.view[data-view]');
+  var crumb = document.getElementById('crumb-current');
+  var labels = {today:"Aujourd'hui", budget:'Budget', health:'Santé', sport:'Sport', social:'Social'};
+
+  function showView(name){
+    views.forEach(function(v){ v.classList.toggle('active', v.getAttribute('data-view') === name); });
+    navItems.forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-view') === name); });
+    crumb.textContent = labels[name] || name;
+  }
+  navItems.forEach(function(item){
+    item.addEventListener('click', function(){ showView(item.getAttribute('data-view')); });
+    item.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); showView(item.getAttribute('data-view')); }
+    });
+  });
+
+  document.querySelectorAll('.filter-pill').forEach(function(p){
+    p.addEventListener('click', function(){
+      p.parentElement.querySelectorAll('.filter-pill').forEach(function(x){ x.classList.remove('active'); });
+      p.classList.add('active');
+    });
+  });
+
+  /* ---------- SVG progress bar with marker + dashed target ---------- */
+  function progressBarSVG(pct, targetPct, alert, w, h){
+    w = w || 100; h = h || 30;
+    var midY = h/2;
+    var fillW = Math.max(0, Math.min(100, pct)) / 100 * w;
+    var targetX = Math.max(0, Math.min(100, targetPct)) / 100 * w;
+    var color = alert ? 'var(--coral)' : 'var(--teal)';
+    return '<svg width="100%" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" role="img" aria-hidden="true">' +
+      '<rect x="0" y="'+(midY-4)+'" width="'+w+'" height="8" rx="4" fill="#f1efe8"/>' +
+      '<rect x="0" y="'+(midY-4)+'" width="'+fillW+'" height="8" rx="4" fill="'+color+'"/>' +
+      '<line x1="'+targetX+'" y1="1" x2="'+targetX+'" y2="'+(h-1)+'" stroke="#9a9d94" stroke-width="1.4" stroke-dasharray="3,3"/>' +
+      '<circle cx="'+fillW+'" cy="'+midY+'" r="5.5" fill="#fff" stroke="'+color+'" stroke-width="2.2"/>' +
+      '</svg>';
+  }
+
+  function metricRow(name, pct, targetPct, alert, figHtml){
+    return '<div class="metric-row">' +
+      '<div class="metric-top"><span class="metric-name">'+name+'</span><span class="metric-figs">'+figHtml+'</span></div>' +
+      progressBarSVG(pct, targetPct, alert, 560, 30) +
+      '</div>';
+  }
+
+  /* Today — recovery & sleep (compact) */
+  document.getElementById('today-recovery-bars').innerHTML =
+    metricRow('Recovery', 71, 83, true, '<b>71 %</b> · repère hier 83 %') +
+    metricRow('Sommeil', 85.6, 100, false, '<b>6h42</b> · besoin 7h50');
+
+  /* Health — recovery detail */
+  document.getElementById('health-recovery-bars').innerHTML =
+    metricRow('Recovery', 71, 83, true, '<b>71 %</b> · hier 83 %') +
+    metricRow('HRV', 96.7, 100, false, '<b>58 ms</b> · moyenne 7j 60 ms') +
+    metricRow('FC repos', 74, 74, false, '<b>52 bpm</b> · stable');
+
+  /* Health — sleep detail */
+  document.getElementById('health-sleep-bars').innerHTML =
+    metricRow('Durée de sommeil', 85.6, 100, false, '<b>6h42</b> · besoin 7h50') +
+    metricRow('Performance', 86, 90, false, '<b>86 %</b> · cible 90 %');
+
+  /* Health — nutrition bars (value/objectif, teal progress) */
+  (function(){
+    var el = document.getElementById('health-nutrition-bars');
+    var rows = [
+      {n:'Calories', v:2340, t:2400, u:'kcal'},
+      {n:'Protéines', v:148, t:160, u:'g'},
+      {n:'Glucides', v:210, t:260, u:'g'}
+    ];
+    el.innerHTML = rows.map(function(r){
+      var pct = Math.min(100, r.v/r.t*100);
+      return '<div class="nutri-row"><div class="nutri-top"><span>'+r.n+'</span><span><b>'+r.v+'</b> '+r.u+' / '+r.t+' '+r.u+'</span></div>' +
+        '<div class="nutri-track"><div class="nutri-fill" style="width:'+pct+'%"></div></div></div>';
+    }).join('');
+  })();
+
+  /* Budget — category rhythm bars, target = 66% of month elapsed */
+  (function(){
+    var el = document.getElementById('budget-categories');
+    var cats = [
+      {n:'Courses', v:415, t:500, pct:83, alert:true},
+      {n:'Transport', v:120, t:150, pct:80, alert:false},
+      {n:'Loisirs', v:180, t:300, pct:60, alert:false},
+      {n:'Restaurants', v:95, t:120, pct:79, alert:false},
+      {n:'Abonnements', v:68, t:70, pct:97, alert:true}
+    ];
+    el.innerHTML = cats.map(function(c){
+      return metricRow(c.n, c.pct, 66, c.alert, '<b>'+c.v+' €</b> / '+c.t+' € · '+c.pct+' %');
+    }).join('');
+  })();
+
+  /* Wealth composition bar */
+  document.getElementById('wealth-bar').innerHTML =
+    '<div style="width:61%;background:#2b5044;"></div>' +
+    '<div style="width:28%;background:#3f7a6a;"></div>' +
+    '<div style="width:11%;background:#a9cabf;"></div>';
+
+  /* Budget trajectory line chart (hand-built SVG) */
+  (function(){
+    var el = document.getElementById('budget-trajectory');
+    var pts = [
+      [40,136.7],[96.4,77.0],[152.7,193.7],[209.1,153.0],[265.5,112.3],
+      [321.8,28.1],[378.2,66.1],[434.6,128.6],[490.9,180.1],[547.3,90.6],
+      [603.6,115.0],[660,55.8]
+    ];
+    var months = ['Oct','Nov','Déc','Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep'];
+    var line = pts.map(function(p,i){ return (i===0?'M':'L')+p[0]+','+p[1]; }).join(' ');
+    var area = line + ' L660,210 L40,210 Z';
+    var markers = pts.map(function(p){ return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.6" fill="#fff" stroke="#3f7a6a" stroke-width="2"/>'; }).join('');
+    var xlabels = pts.map(function(p,i){ return '<text x="'+p[0]+'" y="228" font-size="10.5" fill="#9a9d94" text-anchor="middle" font-family="Inter,sans-serif">'+months[i]+'</text>'; }).join('');
+    var svg = '<svg width="100%" height="250" viewBox="0 0 700 250" role="img" aria-label="Trajectoire du solde mensuel sur 12 mois">' +
+      '<line x1="40" y1="169.3" x2="660" y2="169.3" stroke="#E7E2D6" stroke-width="1"/>' +
+      '<text x="662" y="173" font-size="10" fill="#9a9d94" font-family="Inter,sans-serif">0 €</text>' +
+      '<path d="'+area+'" fill="#3f7a6a" fill-opacity="0.10"/>' +
+      '<path d="'+line+'" fill="none" stroke="#3f7a6a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>' +
+      markers +
+      '<circle cx="152.7" cy="193.7" r="4.5" fill="#c17552"/>' +
+      '<text x="152.7" y="207" font-size="11.5" font-weight="700" fill="#c17552" text-anchor="middle" font-family="Inter,sans-serif">-90</text>' +
+      '<circle cx="321.8" cy="28.1" r="4.5" fill="#2b5044"/>' +
+      '<text x="321.8" y="19" font-size="11.5" font-weight="700" fill="#2b5044" text-anchor="middle" font-family="Inter,sans-serif">+520</text>' +
+      '<circle cx="660" cy="55.8" r="5" fill="#2b5044"/>' +
+      '<text x="638" y="45" font-size="11.5" font-weight="700" fill="#2b5044" text-anchor="middle" font-family="Inter,sans-serif">+418</text>' +
+      xlabels +
+      '</svg>';
+    el.innerHTML = svg;
+  })();
+
+  /* Sport history bar chart 12 months */
+  (function(){
+    var el = document.getElementById('sport-history');
+    var months = ['Oct','Nov','Déc','Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep'];
+    var vals = [14,12,10,11,9,13,16,18,20,22,19,15];
+    var slot = (660-40)/12, barW = 32;
+    var scale = 160/22;
+    var bars = vals.map(function(v,i){
+      var x = 40 + slot*i + (slot-barW)/2;
+      var h = v*scale;
+      var y = 180 - h;
+      var isPeak = v === 22;
+      var color = isPeak ? '#2b5044' : '#3f7a6a';
+      return '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+h+'" rx="5" fill="'+color+'" fill-opacity="'+(isPeak?1:0.78)+'"/>' +
+        '<text x="'+(x+barW/2)+'" y="'+(y-8)+'" font-size="10.5" fill="'+(isPeak?'#2b5044':'#6b7268')+'" font-weight="'+(isPeak?700:500)+'" text-anchor="middle" font-family="Inter,sans-serif">'+v+'h</text>' +
+        '<text x="'+(x+barW/2)+'" y="198" font-size="10.5" fill="#9a9d94" text-anchor="middle" font-family="Inter,sans-serif">'+months[i]+'</text>';
+    }).join('');
+    el.innerHTML = '<svg width="100%" height="210" viewBox="0 0 700 210" role="img" aria-label="Volume d\'entraînement mensuel sur 12 mois">' +
+      '<line x1="40" y1="180" x2="660" y2="180" stroke="#E7E2D6" stroke-width="1"/>' + bars + '</svg>';
+  })();
+
+  /* Social heatmap */
+  (function(){
+    var el = document.getElementById('contact-heatmap');
+    var vals = [0.7,0.5,0.8,0.4,0.6,0.9,0.5,0.7,0.6,0.1,0.15,0.8];
+    el.innerHTML = vals.map(function(v){
+      return '<div class="heat-cell" style="background:rgba(63,122,106,'+v+');" title="Intensité: '+Math.round(v*100)+'%"></div>';
+    }).join('');
+  })();
+})();
+</script>
+</body>
+</html>
