@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KDM360 — Plan analytique</title>
+<meta name="description" content="Maquette KDM360, direction Spatial / Compositional — plan analytique personnel.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3f1ea;
+    --paper-deep:#eae6db;
+    --paper-alt:#eceade;
+    --ink:#1c1b17;
+    --ink-soft:#5c584e;
+    --ink-faint:#8a8577;
+    --line:#c9c2b0;
+    --line-strong:#1c1b17;
+    --accent:#9c3f22;      /* terre cuite — dérive / alerte */
+    --accent-soft:#b96a2f; /* ocre — vigilance */
+    --stable:#37503f;      /* vert sourd — normal / stable */
+    --blue-note:#2c4a63;   /* bleu encre — annotation neutre */
+    --focus:#1a56c4;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    background-position:-1px -1px;
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    font-size:15px;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{font-family:'IBM Plex Mono', ui-monospace, monospace;}
+  h1,h2,h3{font-family:'Fraunces', Georgia, serif; font-weight:500; margin:0; letter-spacing:-0.01em;}
+  a,button{font-family:inherit; color:inherit;}
+  button{cursor:pointer;}
+  :focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
+
+  /* ---------- layout shell ---------- */
+  .frame{
+    max-width:1400px;
+    margin:0 auto;
+    padding:0 28px;
+    display:grid;
+    grid-template-columns:200px 1fr;
+    column-gap:36px;
+  }
+  .masthead{
+    max-width:1400px;
+    margin:0 auto;
+    padding:26px 28px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:1px solid var(--line-strong);
+  }
+  .masthead .mark{display:flex; align-items:baseline; gap:14px;}
+  .masthead .mark .glyph{
+    width:34px;height:34px;border:1px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+    transform:rotate(45deg);
+  }
+  .masthead .mark .glyph span{transform:rotate(-45deg); display:block;}
+  .masthead h1{font-size:22px;}
+  .masthead .sub{font-size:11.5px; color:var(--ink-soft); letter-spacing:.06em; text-transform:uppercase; margin-top:2px;}
+  .masthead .coord{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-soft);
+    text-align:right; line-height:1.7;
+  }
+  .masthead .coord strong{color:var(--ink); font-weight:600;}
+
+  nav.index-rail{
+    position:sticky; top:0; align-self:start;
+    padding-top:30px;
+    display:flex; flex-direction:column;
+    border-right:1px solid var(--line);
+    min-height:calc(100vh - 90px);
+  }
+  nav.index-rail .rail-label{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px;
+  }
+  .index-item{
+    background:none; border:none; text-align:left;
+    padding:12px 14px 12px 0;
+    font-size:13.5px; color:var(--ink-soft);
+    border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+    position:relative;
+  }
+  .index-item:last-of-type{border-bottom:1px solid var(--line);}
+  .index-item .tick{
+    width:6px; height:6px; border:1px solid var(--ink-faint); flex:none;
+    transition:background .15s, border-color .15s;
+  }
+  .index-item .code{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-faint);}
+  .index-item .lbl{font-family:'Fraunces', serif; font-size:14.5px; color:var(--ink);}
+  .index-item.is-active{color:var(--ink);}
+  .index-item.is-active .tick{background:var(--accent); border-color:var(--accent);}
+  .index-item.is-active::before{
+    content:"";
+    position:absolute; left:-1px; top:0; bottom:0; width:2px; background:var(--ink);
+  }
+  .index-item:hover .lbl{color:var(--accent);}
+  .rail-foot{
+    margin-top:auto; padding:18px 14px 30px 0;
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--ink-faint);
+    border-top:1px solid var(--line); line-height:1.8;
+  }
+
+  main{padding:30px 0 90px; min-width:0;}
+  .view{display:none;}
+  .view.is-active{display:block;}
+
+  .view-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:1px solid var(--line-strong); padding-bottom:14px; margin-bottom:30px;
+    flex-wrap:wrap; gap:10px;
+  }
+  .view-head h2{font-size:28px;}
+  .view-head .index-no{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-faint);
+    letter-spacing:.08em;
+  }
+  .view-head .meta{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);
+    text-align:right; line-height:1.7;
+  }
+
+  .zone-title{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .zone-title::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  .hairline{border:none; border-top:1px solid var(--line); margin:34px 0;}
+
+  /* ---------- Aujourd'hui ---------- */
+  .today-axis-wrap{position:relative; padding-top:6px; margin-bottom:8px;}
+  .today-axis-wrap svg{display:block; width:100%; height:56px;}
+  .today-quadrants{
+    position:relative;
+    display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto;
+  }
+  .now-line{
+    position:absolute; top:0; bottom:0; left:66%;
+    width:0; border-left:1px dashed var(--accent);
+    z-index:2; pointer-events:none;
+  }
+  .now-line .now-tag{
+    position:absolute; top:-30px; left:6px; white-space:nowrap;
+    font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--accent);
+  }
+  .quad{
+    padding:22px 26px;
+    min-height:190px;
+  }
+  .quad.q-budget{border-right:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .quad.q-health{border-bottom:1px solid var(--line);}
+  .quad.q-social{border-right:1px solid var(--line);}
+  .quad .qlabel{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-faint); margin-bottom:10px;
+  }
+  .quad .qfigure{font-size:40px; font-family:'IBM Plex Mono', monospace; font-weight:500; line-height:1;}
+  .quad .qfigure.warn{color:var(--accent);}
+  .quad .qfigure.watch{color:var(--accent-soft);}
+  .quad .qsub{margin-top:8px; font-size:13px; color:var(--ink-soft); max-width:32ch;}
+  .quad .qsub .delta{color:var(--accent); font-family:'IBM Plex Mono', monospace;}
+  .link-note{
+    position:absolute; right:26px; top:50%; transform:translateY(-50%);
+    writing-mode:vertical-rl; text-orientation:mixed;
+    font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--ink-faint);
+    letter-spacing:.06em; display:none;
+  }
+  @media (min-width:701px){
+    .quad.q-health{position:relative;}
+    .quad.q-health .link-note{display:block;}
+  }
+
+  .watch-list{margin-top:0;}
+  .watch-row{
+    display:grid; grid-template-columns:120px 1fr auto; gap:18px;
+    padding:16px 0; border-top:1px solid var(--line); align-items:baseline;
+  }
+  .watch-row:last-child{border-bottom:1px solid var(--line);}
+  .watch-row .wtag{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--ink-faint); padding-top:2px;
+  }
+  .watch-row .wtext{font-size:14px; color:var(--ink);}
+  .watch-row .wtext .em{color:var(--accent); font-family:'IBM Plex Mono', monospace;}
+  .watch-row .wval{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink-soft); text-align:right; white-space:nowrap;}
+
+  /* ---------- ledger header (Budget) ---------- */
+  .ledger{
+    display:flex; flex-wrap:wrap; gap:0;
+    border-top:1px solid var(--line-strong); border-bottom:1px solid var(--line-strong);
+    margin-bottom:34px;
+  }
+  .ledger .litem{
+    flex:1 1 160px; padding:16px 22px;
+    border-left:1px solid var(--line);
+  }
+  .ledger .litem:first-child{border-left:none;}
+  .ledger .lk{font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin-bottom:6px;}
+  .ledger .lv{font-family:'IBM Plex Mono', monospace; font-size:24px;}
+  .ledger .lv.pos{color:var(--stable);}
+  .ledger .lv.neutral{color:var(--ink);}
+
+  .cat-chart{width:100%; margin-bottom:8px;}
+  .legend-row{display:flex; gap:22px; margin-bottom:18px; flex-wrap:wrap;}
+  .legend-row .lg{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace;}
+  .legend-row .sw{width:9px;height:9px;}
+  .sw.drift{background:var(--accent);}
+  .sw.watch{background:var(--accent-soft);}
+  .sw.ok{background:var(--stable);}
+
+  .two-col{display:grid; grid-template-columns:1.4fr 1fr; gap:44px;}
+  @media (max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+  .wealth-bar{display:flex; width:100%; height:26px; border-top:1px solid var(--line-strong); border-bottom:1px solid var(--line-strong);}
+  .wealth-bar div{display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--paper);}
+  .wealth-seg-save{background:var(--stable);}
+  .wealth-seg-inv{background:var(--blue-note);}
+  .wealth-seg-liq{background:#8a8577;}
+  .wealth-keys{display:flex; gap:22px; margin-top:12px; flex-wrap:wrap;}
+  .wealth-keys .wk{font-size:12px; color:var(--ink-soft);}
+  .wealth-keys .wk strong{font-family:'IBM Plex Mono', monospace; color:var(--ink); font-weight:600;}
+
+  .explo{
+    background:var(--paper-alt);
+    border-top:1px solid var(--line-strong);
+    margin:0 -28px; padding:36px 28px 10px;
+  }
+  .explo-inner{max-width:1400px; margin:0 auto;}
+  .explo .zone-title{color:var(--ink-soft);}
+  .placeholder-box{
+    border:1px dashed var(--ink-faint);
+    padding:18px 20px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--ink-soft);
+    margin-bottom:34px; max-width:70ch; background:var(--paper);
+  }
+  table.tx{width:100%; border-collapse:collapse; font-size:13px;}
+  table.tx caption{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin-bottom:10px;}
+  table.tx th, table.tx td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line);}
+  table.tx th{font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); font-weight:500;}
+  table.tx td.amt{font-family:'IBM Plex Mono', monospace; text-align:right;}
+  table.tx td.amt.neg{color:var(--accent);}
+  table.tx td.amt.pos{color:var(--stable);}
+
+  /* ---------- Santé ---------- */
+  .scale-row{
+    display:grid; grid-template-columns:150px 1fr 90px; gap:16px; align-items:center;
+    padding:13px 0; border-top:1px solid var(--line);
+  }
+  .scale-row:last-child{border-bottom:1px solid var(--line);}
+  .scale-row .sk{font-size:12.5px; color:var(--ink-soft);}
+  .scale-row .sk small{display:block; font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--ink-faint); margin-top:2px;}
+  .scale-track{position:relative; height:18px;}
+  .scale-track .line{position:absolute; left:0; right:0; top:50%; height:1px; background:var(--line);}
+  .scale-track .tick{position:absolute; top:50%; width:1px; height:8px; background:var(--ink-faint); transform:translate(0,-50%);}
+  .scale-track .tick.lab::after{
+    content:attr(data-l); position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    font-family:'IBM Plex Mono', monospace; font-size:9px; color:var(--ink-faint); white-space:nowrap;
+  }
+  .scale-track .marker{position:absolute; top:50%; width:2px; height:16px; background:var(--ink); transform:translate(-1px,-50%);}
+  .scale-track .marker.warn{background:var(--accent);}
+  .scale-track .prev{position:absolute; top:50%; width:6px; height:6px; border:1px solid var(--ink-faint); border-radius:50%; transform:translate(-50%,-50%); background:var(--paper);}
+  .scale-row .sv{font-family:'IBM Plex Mono', monospace; font-size:14px; text-align:right;}
+  .scale-row .sv .d{display:block; font-size:10.5px; color:var(--accent); margin-top:2px;}
+
+  .split-panel{display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:1px solid var(--line-strong);}
+  .split-panel > div{padding:24px 28px;}
+  .split-panel > div:first-child{border-right:1px solid var(--line);}
+  @media (max-width:700px){.split-panel{grid-template-columns:1fr;} .split-panel > div:first-child{border-right:none; border-bottom:1px solid var(--line);}}
+
+  .prop-bar{position:relative; height:8px; background:var(--paper-deep); margin:10px 0 6px; border:1px solid var(--line);}
+  .prop-bar .fill{position:absolute; top:0; left:0; bottom:0; background:var(--stable);}
+  .prop-bar .target{position:absolute; top:-4px; bottom:-4px; width:1px; background:var(--ink);}
+  .prop-labels{display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); margin-bottom:20px;}
+
+  .stat-inline{display:flex; gap:0; flex-wrap:wrap; border-top:1px solid var(--line); margin-top:26px;}
+  .stat-inline .si{flex:1 1 140px; padding:14px 20px 4px; border-left:1px solid var(--line);}
+  .stat-inline .si:first-child{border-left:none;}
+  .si .sik{font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint);}
+  .si .siv{font-family:'IBM Plex Mono', monospace; font-size:19px; margin-top:4px;}
+  .si .sit{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+
+  /* ---------- Sport ---------- */
+  .filter-index{display:flex; gap:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:30px;}
+  .filter-index button{
+    background:none; border:none; border-left:1px solid var(--line);
+    padding:10px 18px; font-family:'IBM Plex Mono', monospace; font-size:11.5px;
+    color:var(--ink-soft); letter-spacing:.03em;
+  }
+  .filter-index button:first-child{border-left:none;}
+  .filter-index button[aria-pressed="true"]{color:var(--ink); background:var(--paper-deep); font-weight:600;}
+  .filter-index button:hover{color:var(--accent);}
+
+  .brace-link{
+    position:relative; margin:0 0 30px;
+    display:grid; grid-template-columns:1fr auto 1fr; gap:0; align-items:stretch;
+  }
+  .brace-link .bl-left, .brace-link .bl-right{padding:20px 26px;}
+  .brace-link .bl-left{border-right:none;}
+  .brace-link .bl-mid{width:64px; display:flex; align-items:center; justify-content:center;}
+  .brace-link svg{overflow:visible;}
+  @media (max-width:700px){.brace-link{grid-template-columns:1fr;} .brace-link .bl-mid{display:none;}}
+
+  .distrib-bar{display:flex; width:100%; height:30px; border-top:1px solid var(--line-strong); border-bottom:1px solid var(--line-strong);}
+  .distrib-bar div{display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--paper); border-right:1px solid var(--paper);}
+  .distrib-bar div:last-child{border-right:none;}
+
+  .regularity-note{
+    display:flex; align-items:center; gap:16px; padding:16px 0; margin:26px 0;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .regularity-note .rn-text{font-size:13.5px; color:var(--ink-soft);}
+  .regularity-note .rn-text strong{color:var(--ink); font-family:'IBM Plex Mono', monospace;}
+  .stability-glyph{flex:none;}
+
+  /* ---------- Social ---------- */
+  .orbit-wrap{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;}
+  @media (max-width:900px){.orbit-wrap{grid-template-columns:1fr;}}
+  .orbit-legend{display:flex; flex-direction:column; gap:0;}
+  .orbit-legend .ol{display:flex; justify-content:space-between; padding:14px 0; border-top:1px solid var(--line); font-size:13px;}
+  .orbit-legend .ol:last-child{border-bottom:1px solid var(--line);}
+  .orbit-legend .ol .oln{color:var(--ink);}
+  .orbit-legend .ol .olv{font-family:'IBM Plex Mono', monospace; color:var(--ink-soft);}
+
+  .relance-list{margin-top:8px;}
+  .rel-row{display:grid; grid-template-columns:130px 1fr 150px; gap:16px; padding:15px 0; border-top:1px solid var(--line); align-items:baseline;}
+  .rel-row:last-child{border-bottom:1px solid var(--line);}
+  .rel-row .rn{font-family:'Fraunces', serif; font-size:15.5px;}
+  .rel-row .rc{font-family:'IBM Plex Mono', monospace; font-size:10px; text-transform:uppercase; color:var(--ink-faint); display:block; margin-top:2px; letter-spacing:.06em;}
+  .rel-row .rtext{font-size:13px; color:var(--ink-soft);}
+  .rel-row .rmeta{font-family:'IBM Plex Mono', monospace; font-size:12px; text-align:right; color:var(--accent);}
+
+  .contact-card{margin-top:40px; padding-top:26px; border-top:1px solid var(--line-strong);}
+  .contact-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:10px; margin-bottom:20px;}
+  .contact-head h3{font-size:20px;}
+  .contact-tags{display:flex; gap:10px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft);}
+  .contact-tags span{border:1px solid var(--line); padding:3px 8px;}
+  .contact-grid{display:grid; grid-template-columns:1fr 1.6fr; gap:40px;}
+  @media (max-width:700px){.contact-grid{grid-template-columns:1fr;}}
+  .heatmap{display:grid; grid-template-columns:repeat(12,1fr); gap:4px; margin-top:14px;}
+  .heatmap .hm-cell{aspect-ratio:1; background:var(--stable); position:relative;}
+  .heatmap .hm-cell::after{content:attr(data-m); position:absolute; bottom:-16px; left:0; right:0; text-align:center; font-family:'IBM Plex Mono', monospace; font-size:8.5px; color:var(--ink-faint);}
+  .heatmap-wrap{margin-bottom:30px;}
+
+  /* ---------- responsive: rail collapses ---------- */
+  @media (max-width:700px){
+    .masthead{flex-direction:column; align-items:flex-start; gap:10px; padding:20px 16px 14px;}
+    .masthead .coord{text-align:left;}
+    .frame{grid-template-columns:1fr; padding:0 16px;}
+    nav.index-rail{
+      position:static; min-height:auto; border-right:none; border-bottom:1px solid var(--line-strong);
+      flex-direction:row; flex-wrap:wrap; padding-top:16px; margin-bottom:6px;
+    }
+    .index-item{border-top:none; border-bottom:1px solid var(--line); padding:10px 12px 10px 0; flex:1 1 auto;}
+    .index-item:last-of-type{border-bottom:1px solid var(--line);}
+    .index-item.is-active::before{left:0; top:auto; bottom:-1px; right:0; height:2px; width:auto;}
+    .index-item .lbl{display:none;}
+    main{padding:20px 0 60px;}
+    .today-quadrants{grid-template-columns:1fr;}
+    .quad.q-budget, .quad.q-health{border-right:none;}
+    .now-line{display:none;}
+    .ledger .litem{flex:1 1 45%;}
+    .explo{margin:0 -16px; padding:28px 16px 10px;}
+  }
+
+  .skip-link{
+    position:absolute; left:-999px; top:0; background:var(--ink); color:var(--paper);
+    padding:10px 16px; z-index:100;
+  }
+  .skip-link:focus{left:16px; top:16px;}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+<header class="masthead">
+  <div class="mark">
+    <div class="glyph"><span>K</span></div>
+    <div>
+      <h1>KDM360</h1>
+      <div class="sub">Cockpit analytique personnel</div>
+    </div>
+  </div>
+  <div class="coord" aria-hidden="true">
+    <div>PLAN&nbsp;01–05 · ÉCH. VARIABLE</div>
+    <div><strong>20 SEPT 2026</strong> — J20/30 du mois</div>
+  </div>
+</header>
+
+<div class="frame">
+  <nav class="index-rail" aria-label="Navigation entre les vues">
+    <div class="rail-label">Index</div>
+    <button class="index-item is-active" data-target="today" aria-current="true">
+      <span class="tick" aria-hidden="true"></span><span class="code">01</span><span class="lbl">Aujourd'hui</span>
+    </button>
+    <button class="index-item" data-target="budget">
+      <span class="tick" aria-hidden="true"></span><span class="code">02</span><span class="lbl">Budget</span>
+    </button>
+    <button class="index-item" data-target="health">
+      <span class="tick" aria-hidden="true"></span><span class="code">03</span><span class="lbl">Santé</span>
+    </button>
+    <button class="index-item" data-target="sport">
+      <span class="tick" aria-hidden="true"></span><span class="code">04</span><span class="lbl">Sport</span>
+    </button>
+    <button class="index-item" data-target="social">
+      <span class="tick" aria-hidden="true"></span><span class="code">05</span><span class="lbl">Social</span>
+    </button>
+    <div class="rail-foot">
+      Échelle&nbsp;1:1<br>
+      Relevé continu<br>
+      qm.morel
+    </div>
+  </nav>
+
+  <main id="main-content">
+
+    <!-- ============ 01 AUJOURD'HUI ============ -->
+    <section class="view is-active" data-view="today" id="view-today" aria-labelledby="h-today">
+      <div class="view-head">
+        <h2 id="h-today">Aujourd'hui</h2>
+        <div class="meta">01 / plan général<br>quatre domaines, une chronologie</div>
+      </div>
+
+      <div class="today-axis-wrap" role="img" aria-label="Ligne du temps du mois en cours, aujourd'hui au jour 20 sur 30, soit 66 pour cent du mois écoulé">
+        <svg viewBox="0 0 1000 56" preserveAspectRatio="none">
+          <line x1="0" y1="30" x2="1000" y2="30" stroke="#1c1b17" stroke-width="1"></line>
+          <line x1="0" y1="26" x2="0" y2="34" stroke="#1c1b17" stroke-width="1"></line>
+          <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" fill="#8a8577">J1 — début du mois</text>
+          <line x1="1000" y1="26" x2="1000" y2="34" stroke="#1c1b17" stroke-width="1"></line>
+          <text x="1000" y="16" font-family="IBM Plex Mono, monospace" font-size="10" fill="#8a8577" text-anchor="end">J30 — fin du mois</text>
+          <line x1="500" y1="28" x2="500" y2="32" stroke="#c9c2b0" stroke-width="1"></line>
+          <circle cx="660" cy="30" r="4" fill="#9c3f22"></circle>
+          <text x="660" y="50" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#9c3f22" text-anchor="middle">J20 — AUJOURD'HUI (66%)</text>
+        </svg>
+        <div class="now-line" aria-hidden="true"><span class="now-tag">↓ traverse Santé / Sport</span></div>
+
+        <div class="today-quadrants">
+          <div class="quad q-budget">
+            <div class="qlabel">Budget du mois</div>
+            <div class="qfigure">+418<span style="font-size:20px;">€</span></div>
+            <div class="qsub">Tendance <span class="delta">+3&nbsp;%</span> vs mois précédent. Solde provisoire, épargne automatique déjà déduite.</div>
+          </div>
+          <div class="quad q-health">
+            <div class="qlabel">Recovery (Whoop)</div>
+            <div class="qfigure warn">71<span style="font-size:20px;">%</span></div>
+            <div class="qsub">En baisse de <span class="delta">−12&nbsp;pts</span> vs hier (83&nbsp;%). Strain élevé la veille (18,2/21).</div>
+            <div class="link-note">RELIÉ À LA CHARGE SPORTIVE CI-DESSOUS</div>
+          </div>
+          <div class="quad q-social">
+            <div class="qlabel">Social — relances</div>
+            <div class="qfigure watch">4</div>
+            <div class="qsub">Relances en attente, dont 1 contact du cercle « Proche » hors délai cible.</div>
+          </div>
+          <div class="quad q-sport">
+            <div class="qlabel">Charge sport — 7 jours</div>
+            <div class="qfigure warn">8,4<span style="font-size:18px;">/10</span></div>
+            <div class="qsub">Charge élevée. Compétition CrossFit hier — indice de sollicitation encore présent aujourd'hui.</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="hairline">
+
+      <h3 class="zone-title">À regarder</h3>
+      <div class="watch-list">
+        <div class="watch-row">
+          <div class="wtag">Budget</div>
+          <div class="wtext">Catégorie <strong>Courses</strong> : <span class="em">83&nbsp;%</span> du budget consommé, pour <span class="em">66&nbsp;%</span> du mois écoulé.</div>
+          <div class="wval">écart +17&nbsp;pts</div>
+        </div>
+        <div class="watch-row">
+          <div class="wtag">Santé</div>
+          <div class="wtext">HRV stable à <strong>58&nbsp;ms</strong> (−2&nbsp;ms vs moyenne 7j), mais strain élevé hier (<span class="em">18,2</span>).</div>
+          <div class="wval">HRV −2&nbsp;ms</div>
+        </div>
+        <div class="watch-row">
+          <div class="wtag">Sport</div>
+          <div class="wtext">Compétition CrossFit hier — séance <strong>« Open 26.3 »</strong>, 24 min, charge 9,1.</div>
+          <div class="wval">charge 9,1</div>
+        </div>
+        <div class="watch-row">
+          <div class="wtag">Social</div>
+          <div class="wtext"><strong>Camille</strong> (cercle Proche) — dernier contact il y a 30&nbsp;j, seuil cible 21&nbsp;j.</div>
+          <div class="wval">+9&nbsp;j hors délai</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 BUDGET ============ -->
+    <section class="view" data-view="budget" id="view-budget" aria-labelledby="h-budget">
+      <div class="view-head">
+        <h2 id="h-budget">Budget</h2>
+        <div class="meta">02 / lecture principale<br>dérive par catégorie, 66&nbsp;% du mois écoulé</div>
+      </div>
+
+      <div class="ledger">
+        <div class="litem"><div class="lk">Revenus</div><div class="lv neutral">4&nbsp;250&nbsp;€</div></div>
+        <div class="litem"><div class="lk">Dépenses</div><div class="lv neutral">3&nbsp;832&nbsp;€</div></div>
+        <div class="litem"><div class="lk">Solde</div><div class="lv pos">+418&nbsp;€</div></div>
+        <div class="litem"><div class="lk">Épargne (auto)</div><div class="lv neutral">600&nbsp;€</div></div>
+      </div>
+
+      <h3 class="zone-title">Consommation des catégories vs. temps écoulé</h3>
+      <div class="legend-row">
+        <span class="lg"><span class="sw drift"></span> dérive</span>
+        <span class="lg"><span class="sw watch"></span> proche limite</span>
+        <span class="lg"><span class="sw ok"></span> normal</span>
+      </div>
+
+      <svg class="cat-chart" viewBox="0 0 1000 275" role="img" aria-label="Graphique : consommation par catégorie budgétaire comparée aux 66 pour cent du mois écoulé. Courses 83 pour cent, Transport 80 pour cent, Loisirs 60 pour cent, Restaurants 79 pour cent, Abonnements 97 pour cent.">
+        <!-- axis -->
+        <line x1="0" y1="20" x2="1000" y2="20" stroke="#c9c2b0" stroke-width="1"></line>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#8a8577">
+          <line x1="0" y1="16" x2="0" y2="24" stroke="#8a8577"></line>
+          <text x="0" y="12">0%</text>
+          <line x1="250" y1="16" x2="250" y2="24" stroke="#8a8577"></line>
+          <text x="250" y="12" text-anchor="middle">25%</text>
+          <line x1="500" y1="16" x2="500" y2="24" stroke="#8a8577"></line>
+          <text x="500" y="12" text-anchor="middle">50%</text>
+          <line x1="750" y1="16" x2="750" y2="24" stroke="#8a8577"></line>
+          <text x="750" y="12" text-anchor="middle">75%</text>
+          <line x1="1000" y1="16" x2="1000" y2="24" stroke="#8a8577"></line>
+          <text x="1000" y="12" text-anchor="end">100%</text>
+        </g>
+        <!-- 66% reference line traversing every row -->
+        <line x1="660" y1="10" x2="660" y2="265" stroke="#9c3f22" stroke-width="1" stroke-dasharray="3,3"></line>
+        <text x="666" y="34" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#9c3f22">66% — mois écoulé</text>
+
+        <!-- row baselines -->
+        <g stroke="#e3ddce" stroke-width="10">
+          <line x1="0" y1="57" x2="1000" y2="57"></line>
+          <line x1="0" y1="103" x2="1000" y2="103"></line>
+          <line x1="0" y1="149" x2="1000" y2="149"></line>
+          <line x1="0" y1="195" x2="1000" y2="195"></line>
+          <line x1="0" y1="241" x2="1000" y2="241"></line>
+        </g>
+
+        <!-- bars -->
+        <rect x="0" y="52" width="830" height="10" fill="#9c3f22"></rect>
+        <rect x="0" y="98" width="800" height="10" fill="#b96a2f"></rect>
+        <rect x="0" y="144" width="600" height="10" fill="#37503f"></rect>
+        <rect x="0" y="190" width="790" height="10" fill="#b96a2f"></rect>
+        <rect x="0" y="236" width="970" height="10" fill="#9c3f22"></rect>
+
+        <g font-family="Inter, sans-serif" font-size="12.5" fill="#1c1b17">
+          <text x="0" y="46">Courses</text>
+          <text x="0" y="92">Transport</text>
+          <text x="0" y="138">Loisirs</text>
+          <text x="0" y="184">Restaurants</text>
+          <text x="0" y="230">Abonnements</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#1c1b17" text-anchor="end">
+          <text x="1000" y="46">415€ / 500€ · 83%</text>
+          <text x="1000" y="92">120€ / 150€ · 80%</text>
+          <text x="1000" y="138">180€ / 300€ · 60%</text>
+          <text x="1000" y="184">95€ / 120€ · 79%</text>
+          <text x="1000" y="230">68€ / 70€ · 97%</text>
+        </g>
+      </svg>
+
+      <hr class="hairline">
+
+      <div class="two-col">
+        <div>
+          <h3 class="zone-title">Patrimoine</h3>
+          <p style="margin:0 0 14px; font-size:14px;"><span class="num" style="font-size:22px;">42&nbsp;300&nbsp;€</span> <span style="color:var(--stable); font-family:'IBM Plex Mono',monospace; font-size:13px;">+2,1&nbsp;% / 3 mois</span></p>
+          <div class="wealth-bar">
+            <div class="wealth-seg-save" style="width:61%;">61%</div>
+            <div class="wealth-seg-inv" style="width:28%;">28%</div>
+            <div class="wealth-seg-liq" style="width:11%;">11%</div>
+          </div>
+          <div class="wealth-keys">
+            <div class="wk"><strong>Épargne</strong> 61%</div>
+            <div class="wk"><strong>Investissements</strong> 28%</div>
+            <div class="wk"><strong>Liquidités</strong> 11%</div>
+          </div>
+        </div>
+        <div>
+          <h3 class="zone-title">Repères</h3>
+          <p style="font-size:13px; color:var(--ink-soft); margin-top:0;">Deux catégories en dérive nette (Courses, Abonnements) dépassent largement le rythme du mois. Transport et Restaurants restent proches de leur propre plafond sans excès de rythme. Loisirs est sous le seuil des 66&nbsp;%.</p>
+        </div>
+      </div>
+
+      <div class="explo">
+        <div class="explo-inner">
+          <h3 class="zone-title">Exploration</h3>
+
+          <div class="placeholder-box">
+            Sankey OS360 — rendu figé, intégration pixel-identique prévue (voir docs/phase-0/02-sankey-reference.md)
+          </div>
+
+          <h3 class="zone-title">Historique — 12 mois</h3>
+          <svg viewBox="0 0 1000 260" style="width:100%; height:auto; margin-bottom:34px;" role="img" aria-label="Graphique du solde mensuel sur 12 mois, terminant à plus 418 euros en septembre">
+            <line x1="40" y1="183.6" x2="1000" y2="183.6" stroke="#c9c2b0" stroke-width="1" stroke-dasharray="2,3"></line>
+            <text x="0" y="187" font-family="IBM Plex Mono, monospace" font-size="10" fill="#8a8577">0€</text>
+            <line x1="40" y1="20" x2="40" y2="220" stroke="#1c1b17" stroke-width="1"></line>
+            <line x1="40" y1="220" x2="1000" y2="220" stroke="#1c1b17" stroke-width="1"></line>
+            <polyline fill="none" stroke="#2c4a63" stroke-width="2"
+              points="40,103.6 123.6,118.2 207.3,205.5 290.9,150.9 374.5,70.9 458.2,89.1 541.8,129.1 625.5,60 709.1,38.2 792.7,140 876.4,89.1 960,31.6"></polyline>
+            <circle cx="960" cy="31.6" r="4.5" fill="#9c3f22"></circle>
+            <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#8a8577">
+              <text x="40" y="234">O</text><text x="123.6" y="234">N</text><text x="207.3" y="234">D</text>
+              <text x="290.9" y="234">J</text><text x="374.5" y="234">F</text><text x="458.2" y="234">M</text>
+              <text x="541.8" y="234">A</text><text x="625.5" y="234">M</text><text x="709.1" y="234">J</text>
+              <text x="792.7" y="234">J</text><text x="876.4" y="234">A</text><text x="960" y="234" text-anchor="end">S</text>
+            </g>
+            <text x="960" y="20" font-family="IBM Plex Mono, monospace" font-size="11" fill="#9c3f22" text-anchor="end">+418€</text>
+          </svg>
+
+          <table class="tx">
+            <caption>5 dernières transactions</caption>
+            <thead>
+              <tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th style="text-align:right;">Montant</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="num">19 sept.</td><td>Carrefour City</td><td>Courses</td><td class="amt neg">−42,10&nbsp;€</td></tr>
+              <tr><td class="num">18 sept.</td><td>Virement salaire</td><td>Revenus</td><td class="amt pos">+4&nbsp;250,00&nbsp;€</td></tr>
+              <tr><td class="num">17 sept.</td><td>SNCF Connect</td><td>Transport</td><td class="amt neg">−58,00&nbsp;€</td></tr>
+              <tr><td class="num">16 sept.</td><td>Le Petit Bistrot</td><td>Restaurants</td><td class="amt neg">−34,50&nbsp;€</td></tr>
+              <tr><td class="num">15 sept.</td><td>Abonnement streaming</td><td>Abonnements</td><td class="amt neg">−13,99&nbsp;€</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 SANTÉ ============ -->
+    <section class="view" data-view="health" id="view-health" aria-labelledby="h-health">
+      <div class="view-head">
+        <h2 id="h-health">Santé</h2>
+        <div class="meta">03 / lecture principale<br>profil physiologique du jour</div>
+      </div>
+
+      <h3 class="zone-title">Profil du jour</h3>
+      <div class="scale-list">
+        <!-- Recovery 0-100, value 71, prev 83 -->
+        <div class="scale-row">
+          <div class="sk">Recovery<small>Whoop</small></div>
+          <div class="scale-track" role="img" aria-label="Recovery 71 pour cent, en baisse de 12 points par rapport à hier 83 pour cent">
+            <div class="line"></div>
+            <div class="tick lab" style="left:0%;" data-l="0"></div>
+            <div class="tick lab" style="left:50%;" data-l="50"></div>
+            <div class="tick lab" style="left:100%;" data-l="100"></div>
+            <div class="prev" style="left:83%;" title="Hier : 83%"></div>
+            <div class="marker warn" style="left:71%;"></div>
+          </div>
+          <div class="sv">71%<span class="d">−12 pts</span></div>
+        </div>
+        <!-- HRV 40-80 value 58 avg 60 -->
+        <div class="scale-row">
+          <div class="sk">HRV<small>ms, échelle 40–80</small></div>
+          <div class="scale-track" role="img" aria-label="HRV 58 millisecondes, moyenne 7 jours 60 millisecondes">
+            <div class="line"></div>
+            <div class="tick lab" style="left:0%;" data-l="40"></div>
+            <div class="tick lab" style="left:50%;" data-l="60"></div>
+            <div class="tick lab" style="left:100%;" data-l="80"></div>
+            <div class="prev" style="left:50%;" title="Moyenne 7j : 60 ms"></div>
+            <div class="marker" style="left:45%;"></div>
+          </div>
+          <div class="sv">58 ms<span class="d">−2 ms /7j</span></div>
+        </div>
+        <!-- RHR 40-70 value 52 -->
+        <div class="scale-row">
+          <div class="sk">RHR<small>bpm, échelle 40–70</small></div>
+          <div class="scale-track" role="img" aria-label="Fréquence cardiaque de repos 52 battements par minute">
+            <div class="line"></div>
+            <div class="tick lab" style="left:0%;" data-l="40"></div>
+            <div class="tick lab" style="left:50%;" data-l="55"></div>
+            <div class="tick lab" style="left:100%;" data-l="70"></div>
+            <div class="marker" style="left:40%;"></div>
+          </div>
+          <div class="sv">52 bpm</div>
+        </div>
+        <!-- Strain 0-21 value 18.2 -->
+        <div class="scale-row">
+          <div class="sk">Strain (hier)<small>échelle 0–21</small></div>
+          <div class="scale-track" role="img" aria-label="Strain hier 18,2 sur 21">
+            <div class="line"></div>
+            <div class="tick lab" style="left:0%;" data-l="0"></div>
+            <div class="tick lab" style="left:50%;" data-l="10,5"></div>
+            <div class="tick lab" style="left:100%;" data-l="21"></div>
+            <div class="marker warn" style="left:86.7%;"></div>
+          </div>
+          <div class="sv">18,2 / 21</div>
+        </div>
+        <!-- SpO2 90-100 value 97 -->
+        <div class="scale-row">
+          <div class="sk">SpO2<small>%, échelle 90–100</small></div>
+          <div class="scale-track" role="img" aria-label="Saturation en oxygène 97 pour cent">
+            <div class="line"></div>
+            <div class="tick lab" style="left:0%;" data-l="90"></div>
+            <div class="tick lab" style="left:50%;" data-l="95"></div>
+            <div class="tick lab" style="left:100%;" data-l="100"></div>
+            <div class="marker" style="left:70%;"></div>
+          </div>
+          <div class="sv">97%</div>
+        </div>
+        <!-- Temp -1 to 1 value +0.2 -->
+        <div class="scale-row">
+          <div class="sk">Température<small>écart baseline, °C</small></div>
+          <div class="scale-track" role="img" aria-label="Température corporelle plus 0,2 degré vs baseline">
+            <div class="line"></div>
+            <div class="tick lab" style="left:0%;" data-l="−1"></div>
+            <div class="tick lab" style="left:50%;" data-l="0"></div>
+            <div class="tick lab" style="left:100%;" data-l="+1"></div>
+            <div class="marker" style="left:60%;"></div>
+          </div>
+          <div class="sv">+0,2°C</div>
+        </div>
+      </div>
+
+      <hr class="hairline">
+
+      <div class="split-panel">
+        <div>
+          <h3 class="zone-title">Sommeil</h3>
+          <p style="margin:0 0 4px; font-size:14px;">Durée <strong class="num">6h42</strong> — besoin estimé <strong class="num">7h50</strong></p>
+          <div class="prop-bar"><div class="fill" style="width:86%;"></div><div class="target" style="left:100%;"></div></div>
+          <div class="prop-labels"><span>0h</span><span>performance 86%</span></div>
+          <div class="stat-inline" style="margin-top:20px; border-top:none;">
+            <div class="si" style="padding-left:0;"><div class="sik">Efficacité</div><div class="siv">91%</div></div>
+            <div class="si"><div class="sik">REM</div><div class="siv">22%</div></div>
+            <div class="si"><div class="sik">Sommeil profond</div><div class="siv">18%</div></div>
+          </div>
+        </div>
+        <div>
+          <h3 class="zone-title">Nutrition (hier)</h3>
+          <p style="margin:0 0 4px; font-size:14px;">Énergie <strong class="num">2&nbsp;340</strong> / 2&nbsp;400 kcal</p>
+          <div class="prop-bar"><div class="fill" style="width:97.5%;"></div><div class="target" style="left:100%;"></div></div>
+          <p style="margin:16px 0 4px; font-size:14px;">Protéines <strong class="num">148</strong> / 160 g</p>
+          <div class="prop-bar"><div class="fill" style="width:92.5%;"></div><div class="target" style="left:100%;"></div></div>
+          <div class="stat-inline" style="margin-top:20px; border-top:none;">
+            <div class="si" style="padding-left:0;"><div class="sik">Glucides</div><div class="siv">210&nbsp;g</div><div class="sit">pas d'objectif défini</div></div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="zone-title" style="margin-top:30px;">Composition corporelle</h3>
+      <div class="stat-inline">
+        <div class="si" style="padding-left:0;"><div class="sik">Poids</div><div class="siv">78,4 kg</div><div class="sit">−0,3 kg / 30 j</div></div>
+        <div class="si"><div class="sik">Masse grasse</div><div class="siv">15,2%</div></div>
+        <div class="si"><div class="sik">Masse musculaire</div><div class="siv">61,8 kg</div></div>
+      </div>
+    </section>
+
+    <!-- ============ 04 SPORT ============ -->
+    <section class="view" data-view="sport" id="view-sport" aria-labelledby="h-sport">
+      <div class="view-head">
+        <h2 id="h-sport">Sport</h2>
+        <div class="meta">04 / lecture principale<br>charge, régularité, historique</div>
+      </div>
+
+      <div class="filter-index" role="tablist" aria-label="Période affichée">
+        <button role="tab" aria-pressed="true">7 jours</button>
+        <button role="tab" aria-pressed="false">28 jours</button>
+        <button role="tab" aria-pressed="false">Mois en cours</button>
+        <button role="tab" aria-pressed="false">Année</button>
+        <button role="tab" aria-pressed="false">Historique complet</button>
+      </div>
+
+      <div class="brace-link">
+        <div class="bl-left">
+          <h3 class="zone-title">7 derniers jours</h3>
+          <div class="stat-inline" style="border-top:none;">
+            <div class="si" style="padding-left:0;"><div class="sik">Séances</div><div class="siv">5</div></div>
+            <div class="si"><div class="sik">Charge cumulée</div><div class="siv">41,2</div></div>
+            <div class="si"><div class="sik">Durée totale</div><div class="siv">4h52</div></div>
+          </div>
+        </div>
+        <div class="bl-mid" aria-hidden="true">
+          <svg width="64" height="90" viewBox="0 0 64 90">
+            <path d="M8 10 C 40 10, 40 45, 8 45 C 40 45, 40 80, 8 80" fill="none" stroke="#9c3f22" stroke-width="1"></path>
+          </svg>
+        </div>
+        <div class="bl-right">
+          <h3 class="zone-title">Séance récente — dominante</h3>
+          <p style="margin:0 0 10px; font-size:15px; font-family:'Fraunces',serif;">CrossFit — « Open 26.3 »</p>
+          <div class="stat-inline" style="border-top:none;">
+            <div class="si" style="padding-left:0;"><div class="sik">Durée</div><div class="siv">24 min</div></div>
+            <div class="si"><div class="sik">Charge</div><div class="siv" style="color:var(--accent);">9,1</div></div>
+            <div class="si"><div class="sik">FC moy. / pic</div><div class="siv">168 / 184</div></div>
+          </div>
+          <p style="font-size:12.5px; color:var(--ink-soft); margin-top:14px;">Hier — compétition. Contribue directement à la charge élevée de la semaine et à la baisse de recovery observée ce matin.</p>
+        </div>
+      </div>
+
+      <h3 class="zone-title">Répartition — 28 jours</h3>
+      <div class="distrib-bar" role="img" aria-label="Répartition des séances sur 28 jours : CrossFit 45 pour cent, Course 30 pour cent, Vélo 15 pour cent, Trail 10 pour cent">
+        <div style="width:45%; background:#9c3f22;">CrossFit 45%</div>
+        <div style="width:30%; background:#2c4a63;">Course 30%</div>
+        <div style="width:15%; background:#37503f;">Vélo 15%</div>
+        <div style="width:10%; background:#8a8577;">Trail 10%</div>
+      </div>
+
+      <div class="regularity-note">
+        <svg class="stability-glyph" width="90" height="30" viewBox="0 0 90 30" aria-hidden="true">
+          <line x1="2" y1="15" x2="88" y2="15" stroke="#c9c2b0" stroke-width="1"></line>
+          <line x1="12" y1="11" x2="12" y2="19" stroke="#1c1b17"></line>
+          <line x1="34" y1="11" x2="34" y2="19" stroke="#1c1b17"></line>
+          <line x1="56" y1="11" x2="56" y2="19" stroke="#1c1b17"></line>
+          <line x1="78" y1="11" x2="78" y2="19" stroke="#1c1b17"></line>
+        </svg>
+        <div class="rn-text">Régularité : <strong>4,2 séances / semaine</strong> en moyenne sur 12 semaines — tendance <strong>stable</strong>.</div>
+      </div>
+
+      <h3 class="zone-title">Historique — 12 mois (volume, heures)</h3>
+      <svg viewBox="0 0 1000 260" style="width:100%; height:auto;" role="img" aria-label="Volume d'entraînement mensuel sur 12 mois, pic en juillet à 22 heures, creux en février à 9 heures">
+        <line x1="40" y1="20" x2="40" y2="220" stroke="#1c1b17" stroke-width="1"></line>
+        <line x1="40" y1="220" x2="1000" y2="220" stroke="#1c1b17" stroke-width="1"></line>
+        <g stroke="#e3ddce" stroke-width="1">
+          <line x1="40" y1="220" x2="1000" y2="220"></line>
+          <line x1="40" y1="127.7" x2="1000" y2="127.7"></line>
+          <line x1="40" y1="20" x2="1000" y2="20"></line>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#8a8577">
+          <text x="34" y="223" text-anchor="end">9h</text>
+          <text x="34" y="131" text-anchor="end">15h</text>
+          <text x="34" y="24" text-anchor="end">22h</text>
+        </g>
+        <polyline fill="none" stroke="#37503f" stroke-width="2"
+          points="40,143.1 123.6,220 207.3,173.8 290.9,127.7 374.5,96.9 458.2,66.2 541.8,20 625.5,81.5 709.1,112.3 792.7,158.5 876.4,189.2 960,173.8"></polyline>
+        <circle cx="541.8" cy="20" r="4.5" fill="#9c3f22"></circle>
+        <text x="541.8" y="12" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#9c3f22" text-anchor="middle">juil. — 22h</text>
+        <circle cx="123.6" cy="220" r="4.5" fill="#2c4a63"></circle>
+        <text x="123.6" y="238" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#2c4a63" text-anchor="middle">févr. — 9h</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#8a8577">
+          <text x="40" y="252">J</text><text x="123.6" y="252">F</text><text x="207.3" y="252">M</text>
+          <text x="290.9" y="252">A</text><text x="374.5" y="252">M</text><text x="458.2" y="252">J</text>
+          <text x="541.8" y="252">J</text><text x="625.5" y="252">A</text><text x="709.1" y="252">S</text>
+          <text x="792.7" y="252">O</text><text x="876.4" y="252">N</text><text x="960" y="252">D</text>
+        </g>
+      </svg>
+    </section>
+
+    <!-- ============ 05 SOCIAL ============ -->
+    <section class="view" data-view="social" id="view-social" aria-labelledby="h-social">
+      <div class="view-head">
+        <h2 id="h-social">Social</h2>
+        <div class="meta">05 / lecture principale<br>réseau par cercles de proximité</div>
+      </div>
+
+      <div class="orbit-wrap">
+        <svg viewBox="0 0 420 420" style="width:100%; height:auto;" role="img" aria-label="Carte du réseau social en quatre cercles concentriques : Proche 6 contacts, Régulier 12, Occasionnel 11, Dormant 5. Quatre contacts en attente de relance sont positionnés dans leur cercle.">
+          <circle cx="210" cy="210" r="170" fill="none" stroke="#c9c2b0" stroke-width="1"></circle>
+          <circle cx="210" cy="210" r="130" fill="none" stroke="#c9c2b0" stroke-width="1"></circle>
+          <circle cx="210" cy="210" r="90" fill="none" stroke="#c9c2b0" stroke-width="1"></circle>
+          <circle cx="210" cy="210" r="50" fill="none" stroke="#1c1b17" stroke-width="1"></circle>
+          <circle cx="210" cy="210" r="2.5" fill="#1c1b17"></circle>
+          <text x="210" y="204" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#8a8577">VOUS</text>
+
+          <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5c584e">
+            <text x="210" y="164">Proche — 6</text>
+            <text x="210" y="84">Régulier — 12</text>
+            <text x="210" y="44">Occasionnel — 11</text>
+            <text x="210" y="4">Dormant — 5</text>
+          </g>
+
+          <!-- Camille : Proche -->
+          <circle cx="225" cy="165" r="5" fill="#9c3f22"></circle>
+          <text x="234" y="163" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#9c3f22">Camille — 30j</text>
+          <!-- Léa : Proche -->
+          <circle cx="172" cy="172" r="5" fill="#9c3f22"></circle>
+          <text x="102" y="170" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#9c3f22">Léa — 25j</text>
+          <!-- Thomas : Régulier -->
+          <circle cx="128" cy="244" r="5" fill="#b96a2f"></circle>
+          <text x="40" y="262" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#b96a2f">Thomas — 45j</text>
+          <!-- Marc : Régulier -->
+          <circle cx="272" cy="244" r="5" fill="#b96a2f"></circle>
+          <text x="281" y="262" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#b96a2f">Marc — 40j</text>
+        </svg>
+
+        <div>
+          <h3 class="zone-title">Cercles</h3>
+          <div class="orbit-legend">
+            <div class="ol"><span class="oln">Proche</span><span class="olv">6 contacts</span></div>
+            <div class="ol"><span class="oln">Régulier</span><span class="olv">12 contacts</span></div>
+            <div class="ol"><span class="oln">Occasionnel</span><span class="olv">11 contacts</span></div>
+            <div class="ol"><span class="oln">Dormant</span><span class="olv">5 contacts</span></div>
+          </div>
+          <p style="font-size:12.5px; color:var(--ink-soft); margin-top:14px;">34 contacts actifs au total. Les points marqués signalent les relances en attente ci-dessous, positionnés selon leur cercle réel.</p>
+        </div>
+      </div>
+
+      <hr class="hairline">
+
+      <h3 class="zone-title">À relancer (4)</h3>
+      <div class="relance-list">
+        <div class="rel-row">
+          <div><span class="rn">Camille</span><span class="rc">Proche</span></div>
+          <div class="rtext">Dernier contact il y a 30&nbsp;j (seuil 21&nbsp;j). Initiative : à vous de relancer.</div>
+          <div class="rmeta">+9&nbsp;j hors délai</div>
+        </div>
+        <div class="rel-row">
+          <div><span class="rn">Thomas</span><span class="rc">Régulier</span></div>
+          <div class="rtext">Dernier contact il y a 45&nbsp;j (seuil 35&nbsp;j). En attente de sa réponse depuis 12&nbsp;j.</div>
+          <div class="rmeta">+10&nbsp;j hors délai</div>
+        </div>
+        <div class="rel-row">
+          <div><span class="rn">Léa</span><span class="rc">Proche</span></div>
+          <div class="rtext">Dernier contact il y a 25&nbsp;j (seuil 21&nbsp;j).</div>
+          <div class="rmeta">+4&nbsp;j hors délai</div>
+        </div>
+        <div class="rel-row">
+          <div><span class="rn">Marc</span><span class="rc">Régulier</span></div>
+          <div class="rtext">Dernier contact il y a 40&nbsp;j (seuil 35&nbsp;j).</div>
+          <div class="rmeta">+5&nbsp;j hors délai</div>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-head">
+          <h3>Camille</h3>
+          <div class="contact-tags"><span>Cercle Proche</span><span>Importance haute</span><span>14 interactions / 12 mois</span></div>
+        </div>
+        <div class="contact-grid">
+          <div>
+            <div class="stat-inline" style="border-top:none;">
+              <div class="si" style="padding-left:0;"><div class="sik">Dernier contact</div><div class="siv" style="font-size:15px;">Il y a 30 j</div><div class="sit">par appel</div></div>
+            </div>
+            <div class="stat-inline">
+              <div class="si" style="padding-left:0;"><div class="sik">Historique</div><div class="siv">14</div><div class="sit">interactions / 12 mois</div></div>
+            </div>
+          </div>
+          <div class="heatmap-wrap">
+            <h3 class="zone-title" style="margin-bottom:20px;">Fréquence mensuelle des interactions</h3>
+            <div class="heatmap" role="img" aria-label="Heatmap des interactions par mois sur 12 mois, avec un creux net en juillet et août">
+              <div class="hm-cell" data-m="J" style="opacity:.45;"></div>
+              <div class="hm-cell" data-m="F" style="opacity:.45;"></div>
+              <div class="hm-cell" data-m="M" style="opacity:.75;"></div>
+              <div class="hm-cell" data-m="A" style="opacity:.45;"></div>
+              <div class="hm-cell" data-m="M" style="opacity:.75;"></div>
+              <div class="hm-cell" data-m="J" style="opacity:.45;"></div>
+              <div class="hm-cell" data-m="J" style="opacity:.08;"></div>
+              <div class="hm-cell" data-m="A" style="opacity:.08;"></div>
+              <div class="hm-cell" data-m="S" style="opacity:.75;"></div>
+              <div class="hm-cell" data-m="O" style="opacity:.75;"></div>
+              <div class="hm-cell" data-m="N" style="opacity:.45;"></div>
+              <div class="hm-cell" data-m="D" style="opacity:.45;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  var items = document.querySelectorAll('.index-item');
+  var views = document.querySelectorAll('.view');
+  function activate(target){
+    views.forEach(function(v){
+      v.classList.toggle('is-active', v.getAttribute('data-view') === target);
+    });
+    items.forEach(function(it){
+      var isActive = it.getAttribute('data-target') === target;
+      it.classList.toggle('is-active', isActive);
+      if(isActive){ it.setAttribute('aria-current','true'); } else { it.removeAttribute('aria-current'); }
+    });
+    try{ window.scrollTo({top:0, behavior:'instant'}); }catch(e){ window.scrollTo(0,0); }
+  }
+  items.forEach(function(it){
+    it.addEventListener('click', function(){ activate(it.getAttribute('data-target')); });
+  });
+
+  var filterTabs = document.querySelectorAll('.filter-index button');
+  filterTabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterTabs.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
