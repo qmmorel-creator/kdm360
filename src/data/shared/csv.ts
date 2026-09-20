@@ -41,10 +41,13 @@ export function parseCsv(text: string): string[][] {
   return rows;
 }
 
-/** Nombre au format français ("83,488" -> 83.488, "13,631%" -> 13.631). */
+/** Nombre au format français ("83,488" -> 83.488, "13,631%" -> 13.631). Reconnaît
+ * aussi les marqueurs d'absence de valeur ("—", "-", "n/a", "null") comme OS360. */
 export function parseFrenchNumber(raw: string | undefined): number | undefined {
   if (raw === undefined) return undefined;
-  const cleaned = raw.trim().replace(/%$/, '').replace(/\s/g, '').replace(',', '.').replace(/\.$/, '');
+  const trimmed = raw.trim();
+  if (trimmed === '' || /^(—|-|n\/a|null)$/i.test(trimmed)) return undefined;
+  const cleaned = trimmed.replace(/%$/, '').replace(/[\s  ]/g, '').replace(',', '.').replace(/\.$/, '');
   if (cleaned === '') return undefined;
   const n = Number(cleaned);
   return Number.isFinite(n) ? n : undefined;

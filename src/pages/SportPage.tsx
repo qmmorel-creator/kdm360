@@ -6,11 +6,31 @@ import { BarChart } from '@/charts/BarChart';
 import { useAsync } from '@/app/useAsync';
 import { getSportOverview } from '@/domains/sport';
 
-const PERIODS = ['7 jours', '28 jours', 'Mois en cours', 'Année', 'Historique complet'];
+const PERIODS = ['7 jours', '28 jours', 'Mois en cours', 'Année', 'Historique complet'] as const;
+
+/** Fenêtre (en jours) de la « Répartition par discipline » pour chaque période —
+ * les autres métriques de la page (charge 7j, objectif mensuel, tendances) restent
+ * sur leur fenêtre fixe, cf. domains/sport/index.ts. */
+function periodDays(period: (typeof PERIODS)[number]): number {
+  switch (period) {
+    case '7 jours':
+      return 7;
+    case '28 jours':
+      return 28;
+    case 'Mois en cours': {
+      const now = new Date();
+      return now.getDate();
+    }
+    case 'Année':
+      return 365;
+    case 'Historique complet':
+      return 3650;
+  }
+}
 
 export function SportPage() {
-  const state = useAsync(getSportOverview, []);
-  const [period, setPeriod] = useState(PERIODS[0]);
+  const [period, setPeriod] = useState<(typeof PERIODS)[number]>(PERIODS[1]);
+  const state = useAsync(() => getSportOverview(periodDays(period)), [period]);
 
   return (
     <>
@@ -46,8 +66,8 @@ export function SportPage() {
                     <div><div className="kpi-value" style={{ fontSize: 22 }}>{s.loadLast7d}</div><div className="card-title-sub">Charge cumulée / 7j (min)</div></div>
                     <div><div className="kpi-value" style={{ fontSize: 22 }}>{Math.floor(s.durationLast7dMin / 60)}h{String(s.durationLast7dMin % 60).padStart(2, '0')}</div><div className="card-title-sub">Durée totale</div></div>
                   </div>
-                  <div className="card-title-sub" style={{ marginBottom: 6, fontWeight: 600 }}>Répartition par discipline — 28 jours</div>
-                  {s.disciplineSplit28d.length === 0 && <p className="card-title-sub">Aucune séance sur les 28 derniers jours.</p>}
+                  <div className="card-title-sub" style={{ marginBottom: 6, fontWeight: 600 }}>Répartition par discipline — {period.toLowerCase()}</div>
+                  {s.disciplineSplit28d.length === 0 && <p className="card-title-sub">Aucune séance sur la période sélectionnée.</p>}
                   {s.disciplineSplit28d.map((d) => (
                     <div className="disc-row" key={d.name}>
                       <span className="disc-name">{d.name}</span>

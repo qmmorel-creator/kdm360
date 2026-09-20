@@ -14,7 +14,7 @@ réelles, qui diffèrent par endroits de ce qui était inféré) :
 
 | Domaine | Source réelle | Mécanisme |
 |---|---|---|
-| Budget | Supabase, projet `kdm360` (`ftgmjaozveprnshkdosj`), tables `finance_*` | Client `@supabase/supabase-js`, clé publiable + RLS (même modèle qu'OS360) |
+| Budget | Supabase, projet `kdm360` (`ftgmjaozveprnshkdosj`), tables `finance_*` | Client `@supabase/supabase-js`, clé publiable + RLS (même modèle qu'OS360). Chaque politique RLS exige `auth.uid() = current_app_owner()` : la clé seule ne donne accès à rien, il faut une session authentifiée (email/mot de passe du compte propriétaire, saisis dans Réglages → jamais commités, session persistée par le SDK) |
 | Santé | Google Sheets `santé_qm`, export CSV « Publié sur le web » (gid=0) | `fetch()` direct, CSV public par construction — mêmes URL qu'OS360 |
 | Sport | Même document, onglet « Activités Strava » (gid=1900000002) | `fetch()` direct, CSV public — séances synchronisées depuis Strava |
 | Social | Pont Apps Script (`fichier.gs`, même contrat JSON) | URL **non codée en dur** — vient des réglages utilisateur (`src/app/settings.ts`, page Réglages), jamais commitée : accès en écriture non authentifié côté OS360 (finding D1 de l'audit), et données réelles (contacts, adresses) |

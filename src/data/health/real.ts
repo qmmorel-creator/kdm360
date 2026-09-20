@@ -2,10 +2,46 @@
 // Mêmes URL qu'OS360 (index.html d'OS360, offset ~294988 du bundle) : un export
 // CSV public par construction (fonctionnalité "Publier sur le web" de Sheets),
 // donc sans risque à committer, contrairement aux ponts Apps Script à jeton.
-import { parseCsv, parseFrenchNumber, csvRowsToObjects, findKey } from '@/data/shared/csv';
+import { parseCsv, parseFrenchNumber } from '@/data/shared/csv';
 
 const MAIN_CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlpxcNI4NX_I23GY3PdPuzU88eymHz05uzalM1fksPQF2002bK8F5_lQBfkY7gTBFhr08wjRkuWsy3/pub?output=csv&gid=0';
+
+// Ordre exact des colonnes de l'onglet — repris tel quel du code source d'OS360
+// (index.html minifié, variable `we` : `date.weight.bodyFat.muscleMass.muscleRate.
+// recovery.sleepHours.strain.calories.hrv.restingHr.respRate.spo2.skinTemp.sleepPerf.
+// sleepEff.deepSleep.remSleep.steps.stress.hrZone45.vo2max.sportDuration.caloriesIn.
+// proteins.carbs`). OS360 ignore le texte des en-têtes et lit par position — on fait
+// pareil plutôt que de matcher un intitulé de colonne, plus fragile (accents, unités,
+// branding "Whoop" qui peut changer sans que l'ordre des colonnes ne bouge).
+const COLUMN_ORDER = [
+  'date',
+  'weight',
+  'bodyFat',
+  'muscleMass',
+  'muscleRate',
+  'recovery',
+  'sleepHours',
+  'strain',
+  'calories',
+  'hrv',
+  'restingHr',
+  'respRate',
+  'spo2',
+  'skinTemp',
+  'sleepPerf',
+  'sleepEff',
+  'deepSleep',
+  'remSleep',
+  'steps',
+  'stress',
+  'hrZone45',
+  'vo2max',
+  'sportDuration',
+  'caloriesIn',
+  'proteins',
+  'carbs',
+] as const;
 
 export interface DailyHealthRow {
   date: string; // ISO yyyy-mm-dd
@@ -48,63 +84,39 @@ export async function fetchHealthDaily(days = 90): Promise<DailyHealthRow[]> {
   const text = await res.text();
   const rows = parseCsv(text);
   if (rows.length === 0) return [];
-  const headers = rows[0].map((h) => h.trim());
-  const objects = csvRowsToObjects(rows);
+  // Ligne 0 = en-têtes, ignorée : lecture positionnelle par COLUMN_ORDER (cf. OS360).
+  const dataRows = rows.slice(1);
 
-  const key = {
-    date: findKey(headers, 'date') ?? headers[0],
-    weight: findKey(headers, 'poids'),
-    bodyFat: findKey(headers, 'masse grasse'),
-    muscleMass: findKey(headers, 'masse musculaire', 'kg') ?? findKey(headers, 'masse musculaire'),
-    recovery: findKey(headers, 'récupération') ?? findKey(headers, 'recuperation'),
-    sleepHours: findKey(headers, 'sommeil réel') ?? findKey(headers, 'sommeil reel'),
-    strain: findKey(headers, 'strain'),
-    kcalExpended: findKey(headers, 'calories', 'dépensées') ?? findKey(headers, 'calories', 'depensees'),
-    hrv: findKey(headers, 'hrv'),
-    restingHr: findKey(headers, 'fc repos'),
-    respRate: findKey(headers, 'respiratoire'),
-    spo2: findKey(headers, 'spo'),
-    skinTemp: findKey(headers, 'température') ?? findKey(headers, 'temperature'),
-    sleepPerf: findKey(headers, 'performance sommeil'),
-    sleepEff: findKey(headers, 'efficacité sommeil') ?? findKey(headers, 'efficacite sommeil'),
-    deepSleep: findKey(headers, 'sommeil profond'),
-    remSleep: findKey(headers, 'sommeil rem') ?? findKey(headers, 'rem'),
-    steps: findKey(headers, 'pas'),
-    stress: findKey(headers, 'stress'),
-    vo2max: findKey(headers, 'vo'),
-    sportDuration: findKey(headers, 'durée sport') ?? findKey(headers, 'duree sport'),
-    kcalConsumed: findKey(headers, 'calories consommées') ?? findKey(headers, 'calories consommees'),
-    protein: findKey(headers, 'protéines') ?? findKey(headers, 'proteines'),
-    carbs: findKey(headers, 'glucides'),
-  };
-
-  const out: DailyHealthRow[] = objects
-    .map((o) => ({
-      date: toIsoDate(o[key.date] ?? ''),
-      weightKg: parseFrenchNumber(key.weight ? o[key.weight] : undefined),
-      bodyFatPct: parseFrenchNumber(key.bodyFat ? o[key.bodyFat] : undefined),
-      muscleMassKg: parseFrenchNumber(key.muscleMass ? o[key.muscleMass] : undefined),
-      recoveryPct: parseFrenchNumber(key.recovery ? o[key.recovery] : undefined),
-      sleepHours: parseFrenchNumber(key.sleepHours ? o[key.sleepHours] : undefined),
-      strain: parseFrenchNumber(key.strain ? o[key.strain] : undefined),
-      kcalExpended: parseFrenchNumber(key.kcalExpended ? o[key.kcalExpended] : undefined),
-      hrvMs: parseFrenchNumber(key.hrv ? o[key.hrv] : undefined),
-      restingHr: parseFrenchNumber(key.restingHr ? o[key.restingHr] : undefined),
-      respRate: parseFrenchNumber(key.respRate ? o[key.respRate] : undefined),
-      spo2Pct: parseFrenchNumber(key.spo2 ? o[key.spo2] : undefined),
-      skinTempC: parseFrenchNumber(key.skinTemp ? o[key.skinTemp] : undefined),
-      sleepPerfPct: parseFrenchNumber(key.sleepPerf ? o[key.sleepPerf] : undefined),
-      sleepEffPct: parseFrenchNumber(key.sleepEff ? o[key.sleepEff] : undefined),
-      deepSleepHours: parseFrenchNumber(key.deepSleep ? o[key.deepSleep] : undefined),
-      remSleepHours: parseFrenchNumber(key.remSleep ? o[key.remSleep] : undefined),
-      steps: parseFrenchNumber(key.steps ? o[key.steps] : undefined),
-      stress: parseFrenchNumber(key.stress ? o[key.stress] : undefined),
-      vo2max: parseFrenchNumber(key.vo2max ? o[key.vo2max] : undefined),
-      sportDurationHours: parseFrenchNumber(key.sportDuration ? o[key.sportDuration] : undefined),
-      kcalConsumed: parseFrenchNumber(key.kcalConsumed ? o[key.kcalConsumed] : undefined),
-      proteinG: parseFrenchNumber(key.protein ? o[key.protein] : undefined),
-      carbsG: parseFrenchNumber(key.carbs ? o[key.carbs] : undefined),
-    }))
+  const out: DailyHealthRow[] = dataRows
+    .map((row) => {
+      const cell = (name: (typeof COLUMN_ORDER)[number]) => row[COLUMN_ORDER.indexOf(name)];
+      return {
+        date: toIsoDate(cell('date') ?? ''),
+        weightKg: parseFrenchNumber(cell('weight')),
+        bodyFatPct: parseFrenchNumber(cell('bodyFat')),
+        muscleMassKg: parseFrenchNumber(cell('muscleMass')),
+        recoveryPct: parseFrenchNumber(cell('recovery')),
+        sleepHours: parseFrenchNumber(cell('sleepHours')),
+        strain: parseFrenchNumber(cell('strain')),
+        kcalExpended: parseFrenchNumber(cell('calories')),
+        hrvMs: parseFrenchNumber(cell('hrv')),
+        restingHr: parseFrenchNumber(cell('restingHr')),
+        respRate: parseFrenchNumber(cell('respRate')),
+        spo2Pct: parseFrenchNumber(cell('spo2')),
+        skinTempC: parseFrenchNumber(cell('skinTemp')),
+        sleepPerfPct: parseFrenchNumber(cell('sleepPerf')),
+        sleepEffPct: parseFrenchNumber(cell('sleepEff')),
+        deepSleepHours: parseFrenchNumber(cell('deepSleep')),
+        remSleepHours: parseFrenchNumber(cell('remSleep')),
+        steps: parseFrenchNumber(cell('steps')),
+        stress: parseFrenchNumber(cell('stress')),
+        vo2max: parseFrenchNumber(cell('vo2max')),
+        sportDurationHours: parseFrenchNumber(cell('sportDuration')),
+        kcalConsumed: parseFrenchNumber(cell('caloriesIn')),
+        proteinG: parseFrenchNumber(cell('proteins')),
+        carbsG: parseFrenchNumber(cell('carbs')),
+      };
+    })
     .filter((r) => /^\d{4}-\d{2}-\d{2}$/.test(r.date))
     .sort((a, b) => (a.date < b.date ? 1 : -1)); // plus récent d'abord
 

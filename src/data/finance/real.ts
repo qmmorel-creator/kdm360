@@ -2,6 +2,7 @@
 // depuis le 28/08/2026 (finance_cutover_state.active = true, mode "supabase_canonical").
 // Schéma réel, pas celui inféré en Phase 0 — voir docs/architecture/02-contrats-donnees.md.
 import { supabase } from './supabaseClient';
+import { getSession } from './supabaseAuth';
 
 export interface RealTransaction {
   transaction_id: string;
@@ -34,7 +35,16 @@ function monthStartISO(d = new Date()): string {
   return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
 }
 
+/** La RLS de finance_* exige une session authentifiée (auth.uid() = current_app_owner()) —
+ * la clé publiable seule ne renvoie rien. Erreur explicite plutôt qu'un résultat vide
+ * silencieux, cf. principe "jamais un zéro silencieux" (avis produit §22). */
+async function requireSession(): Promise<void> {
+  const session = await getSession();
+  if (!session) throw new Error('Non connecté à Supabase — renseigne tes identifiants dans Réglages.');
+}
+
 export async function fetchAccounts(): Promise<RealAccount[]> {
+  await requireSession();
   const { data, error } = await supabase
     .from('finance_accounts_current')
     .select('account_id,name,account_type,opening_balance,color,active')

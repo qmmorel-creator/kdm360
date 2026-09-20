@@ -13,7 +13,12 @@ function daysBetween(a: string, b: string): number {
   return Math.round((new Date(a).getTime() - new Date(b).getTime()) / 86400000);
 }
 
-export async function getSportOverview() {
+/** `splitWindowDays` contrôle la fenêtre de la « Répartition par discipline » —
+ * c'est le réglage piloté par les boutons de période de la page Sport. Les autres
+ * métriques (charge/durée 7j, objectif mensuel, tendances) restent sur leur fenêtre
+ * fixe : ce sont des indicateurs définis par métrique figée, pas par la période
+ * choisie à l'écran (docs/phase-0/04-metriques-figees.md). */
+export async function getSportOverview(splitWindowDays = 28) {
   const [allSessions, healthRows] = await Promise.all([fetchSportSessions(365), fetchHealthDaily(60)]);
   const sessions = allSessions.filter((s) => !isElectricBike(s));
 
@@ -21,7 +26,7 @@ export async function getSportOverview() {
   const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
 
   const last7 = sessions.filter((s) => s.date >= daysAgo(7));
-  const last28 = sessions.filter((s) => s.date >= daysAgo(28));
+  const last28 = sessions.filter((s) => s.date >= daysAgo(splitWindowDays));
   const last12Weeks = sessions.filter((s) => s.date >= daysAgo(84));
 
   const loadLast7Days = last7.reduce((sum, s) => sum + sessionLoad(s), 0);
@@ -106,6 +111,7 @@ export async function getSportOverview() {
     durationLast7dMin: Math.round(durationLast7dMin),
     lastSession,
     disciplineSplit28d,
+    splitWindowDays,
     volume12m,
     regularity12w,
     monthHoursExcludingEbike,
