@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KDM360 — Cockpit</title>
+<meta name="description" content="KDM360 — Personal Analytical Cockpit. Direction visuelle C : Swiss / Scientific data visualization.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#111111;
+    --ink-70:#3a3a3a;
+    --gray-2:#767676;
+    --gray-3:#a9a9a9;
+    --hairline:#d4d4d4;
+    --hairline-strong:#b7b7b7;
+    --paper:#ffffff;
+    --paper-2:#f4f4f3;
+    --blue:#0044ad;      /* rôle unique : focus / série primaire / état actif */
+    --red:#c8102e;       /* rôle unique : écart / alerte / action requise */
+    --grid-max:1360px;
+    --gutter:24px;
+    --unit:8px;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif;
+    font-feature-settings:'tnum' 1,'cv11' 1;
+    font-variant-numeric:tabular-nums;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+
+  .wrap{
+    max-width:var(--grid-max);
+    margin:0 auto;
+    padding:0 var(--gutter);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    column-gap:var(--gutter);
+  }
+
+  /* ---------- Ruler / coordinate strip ---------- */
+  .ruler{
+    border-bottom:1px solid var(--ink);
+  }
+  .ruler .wrap{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    column-gap:var(--gutter);
+    padding-top:6px;
+    padding-bottom:6px;
+  }
+  .ruler span{
+    font-size:9px;
+    letter-spacing:.06em;
+    color:var(--gray-3);
+    border-left:1px solid var(--hairline);
+    padding-left:4px;
+  }
+  .ruler span:first-child{border-left:none;}
+
+  /* ---------- Header ---------- */
+  header.masthead{
+    border-bottom:1px solid var(--ink);
+  }
+  header.masthead .wrap{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    column-gap:var(--gutter);
+    align-items:end;
+    padding:22px 0 16px;
+  }
+  .mark{
+    grid-column:1 / 6;
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+  }
+  .mark .id{
+    font-weight:800;
+    font-size:1.5rem;
+    letter-spacing:-.01em;
+  }
+  .mark .id sup{
+    font-weight:600;
+    font-size:.6em;
+    color:var(--blue);
+    vertical-align:super;
+  }
+  .mark .sub{
+    font-size:.72rem;
+    color:var(--gray-2);
+    letter-spacing:.02em;
+  }
+  .meta{
+    grid-column:6 / 13;
+    display:flex;
+    justify-content:flex-end;
+    gap:32px;
+    text-align:right;
+  }
+  .meta .field{display:flex;flex-direction:column;gap:2px;}
+  .meta .field .k{font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-2);}
+  .meta .field .v{font-size:.82rem;font-weight:600;}
+
+  /* ---------- Nav ---------- */
+  nav.tabs{
+    border-bottom:1px solid var(--ink);
+    background:var(--paper);
+    position:sticky;
+    top:0;
+    z-index:20;
+  }
+  nav.tabs .wrap{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    column-gap:var(--gutter);
+  }
+  nav.tabs ul{
+    grid-column:1 / 13;
+    list-style:none;
+    margin:0;padding:0;
+    display:flex;
+  }
+  nav.tabs li{flex:1 1 0;}
+  nav.tabs button{
+    width:100%;
+    background:none;
+    border:none;
+    border-right:1px solid var(--hairline);
+    padding:14px 6px 12px;
+    font-family:inherit;
+    font-size:.8rem;
+    letter-spacing:.01em;
+    color:var(--gray-2);
+    cursor:pointer;
+    text-align:left;
+    position:relative;
+    display:flex;
+    gap:8px;
+    align-items:baseline;
+  }
+  nav.tabs li:last-child button{border-right:none;}
+  nav.tabs button .n{font-size:.68rem;color:var(--gray-3);font-weight:600;}
+  nav.tabs button[aria-selected="true"]{
+    color:var(--ink);
+    font-weight:700;
+  }
+  nav.tabs button[aria-selected="true"] .n{color:var(--blue);}
+  nav.tabs button[aria-selected="true"]::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:-1px;
+    height:2px;
+    background:var(--blue);
+  }
+  nav.tabs button:hover{color:var(--ink);}
+
+  /* ---------- Main layout ---------- */
+  main{padding:32px 0 80px;}
+  section[data-view]{display:none;}
+  section[data-view].active{display:block;}
+
+  .page-head{
+    grid-column:1/13;
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    column-gap:var(--gutter);
+    padding-bottom:24px;
+    border-bottom:1px solid var(--hairline-strong);
+    margin-bottom:28px;
+  }
+  .page-head h1{
+    grid-column:1/8;
+    margin:0;
+    font-size:1.6rem;
+    font-weight:800;
+    letter-spacing:-.01em;
+  }
+  .page-head .stamp{
+    grid-column:8/13;
+    text-align:right;
+    font-size:.72rem;
+    color:var(--gray-2);
+    align-self:end;
+  }
+  .page-head .stamp b{color:var(--ink);font-weight:700;}
+
+  .eyebrow{
+    font-size:.66rem;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--gray-2);
+    font-weight:600;
+    margin:0 0 6px;
+  }
+  h2.block-title{
+    font-size:.95rem;
+    font-weight:700;
+    margin:0 0 4px;
+    letter-spacing:-.005em;
+  }
+  .block-note{font-size:.74rem;color:var(--gray-2);margin:0 0 14px;}
+
+  /* ---------- Panels ---------- */
+  .panel{
+    border-top:2px solid var(--ink);
+    padding-top:14px;
+    margin-bottom:32px;
+  }
+  .row{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    column-gap:var(--gutter);
+    row-gap:32px;
+    margin-bottom:32px;
+  }
+  .span-3{grid-column:span 3;}
+  .span-4{grid-column:span 4;}
+  .span-6{grid-column:span 6;}
+  .span-7{grid-column:span 7;}
+  .span-5{grid-column:span 5;}
+  .span-8{grid-column:span 8;}
+  .span-9{grid-column:span 9;}
+  .span-12{grid-column:span 12;}
+
+  /* ---------- KPI ---------- */
+  .kpi{
+    border-top:1px solid var(--ink);
+    padding-top:12px;
+  }
+  .kpi .lab{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-2);font-weight:600;margin-bottom:10px;}
+  .kpi .val{
+    font-size:2.4rem;
+    font-weight:800;
+    letter-spacing:-.02em;
+    line-height:1;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .kpi .val .unit{font-size:1rem;font-weight:600;color:var(--gray-2);}
+  .kpi .delta{
+    margin-top:10px;
+    font-size:.76rem;
+    font-weight:600;
+    color:var(--gray-2);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .kpi .delta.alert{color:var(--red);}
+  .kpi .delta.info{color:var(--blue);}
+  .kpi .foot{font-size:.72rem;color:var(--gray-2);margin-top:8px;}
+
+  .arrow-up::before{content:"▲ ";font-size:.6em;position:relative;top:-1px;}
+  .arrow-down::before{content:"▼ ";font-size:.6em;position:relative;top:-1px;}
+
+  /* ---------- Watchlist ---------- */
+  .watch{
+    border:1px solid var(--hairline-strong);
+  }
+  .watch-item{
+    display:grid;
+    grid-template-columns:28px 100px 1fr 140px;
+    column-gap:16px;
+    align-items:center;
+    padding:14px 16px;
+    border-bottom:1px solid var(--hairline);
+  }
+  .watch-item:last-child{border-bottom:none;}
+  .watch-item .idx{
+    font-size:.72rem;
+    font-weight:700;
+    color:var(--red);
+    border:1px solid var(--red);
+    width:22px;height:22px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .watch-item .dom{
+    font-size:.64rem;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--gray-2);
+  }
+  .watch-item .txt{font-size:.86rem;line-height:1.4;}
+  .watch-item .txt b{font-weight:700;}
+  .watch-item .metric{
+    text-align:right;
+    font-size:.86rem;
+    font-weight:700;
+    color:var(--red);
+    white-space:nowrap;
+  }
+  @media (max-width:700px){
+    .watch-item{grid-template-columns:22px 1fr;grid-template-areas:"idx dom" "txt txt" "metric metric";row-gap:6px;}
+    .watch-item .idx{grid-area:idx;}
+    .watch-item .dom{grid-area:dom;}
+    .watch-item .txt{grid-area:txt;}
+    .watch-item .metric{grid-area:metric;text-align:left;}
+  }
+
+  /* ---------- Tables ---------- */
+  table.data{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.82rem;
+  }
+  table.data caption{text-align:left;}
+  table.data th{
+    text-align:left;
+    font-size:.64rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--gray-2);
+    font-weight:700;
+    padding:0 8px 8px 0;
+    border-bottom:1px solid var(--ink);
+  }
+  table.data td{
+    padding:9px 8px 9px 0;
+    border-bottom:1px solid var(--hairline);
+  }
+  table.data td.num,table.data th.num{text-align:right;}
+  table.data tr:last-child td{border-bottom:1px solid var(--ink);}
+
+  /* ---------- Budget bars ---------- */
+  .cat-list{border-top:1px solid var(--ink);}
+  .cat-row{
+    display:grid;
+    grid-template-columns:130px 1fr 150px;
+    align-items:center;
+    column-gap:16px;
+    padding:12px 0;
+    border-bottom:1px solid var(--hairline);
+  }
+  .cat-row .name{font-size:.82rem;font-weight:600;}
+  .cat-row .name .tag{
+    display:block;
+    font-size:.62rem;
+    color:var(--red);
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    margin-top:2px;
+  }
+  .cat-row .name .tag.ok{color:var(--gray-2);}
+  .bar-track{
+    position:relative;
+    height:14px;
+    background:var(--paper-2);
+    border:1px solid var(--hairline-strong);
+  }
+  .bar-fill{
+    position:absolute;top:0;left:0;bottom:0;
+    background:var(--blue);
+  }
+  .bar-fill.warn{background:repeating-linear-gradient(135deg,var(--red),var(--red) 3px,#fff 3px,#fff 6px);}
+  .bar-fill.over{background:var(--red);}
+  .bar-ref{
+    position:absolute;top:-3px;bottom:-3px;
+    width:0;
+    border-left:1px dashed var(--ink);
+  }
+  .bar-ref::after{
+    content:"";
+  }
+  .cat-row .figures{text-align:right;font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;}
+  .cat-row .figures .pct{display:block;font-size:.68rem;color:var(--gray-2);font-weight:600;margin-top:2px;}
+  @media (max-width:700px){
+    .cat-row{grid-template-columns:1fr;row-gap:8px;}
+    .cat-row .figures{text-align:left;}
+  }
+
+  .legend-inline{
+    display:flex;gap:18px;flex-wrap:wrap;
+    font-size:.7rem;color:var(--gray-2);
+    margin-top:10px;
+  }
+  .legend-inline .sw{display:inline-flex;align-items:center;gap:6px;}
+  .legend-inline .sw i{width:12px;height:8px;display:inline-block;}
+  .legend-inline .sw i.blue{background:var(--blue);}
+  .legend-inline .sw i.over{background:var(--red);}
+  .legend-inline .sw i.warn{background:repeating-linear-gradient(135deg,var(--red),var(--red) 2px,#fff 2px,#fff 4px);}
+  .legend-inline .sw i.ref{border-left:1px dashed var(--ink);height:12px;}
+
+  /* ---------- Stacked composition bar ---------- */
+  .stack{
+    display:flex;
+    height:28px;
+    border:1px solid var(--ink);
+  }
+  .stack div{position:relative;border-right:1px solid var(--paper);}
+  .stack div:last-child{border-right:none;}
+  .stack-legend{display:flex;gap:24px;margin-top:10px;flex-wrap:wrap;}
+  .stack-legend .it{font-size:.74rem;}
+  .stack-legend .it b{display:block;font-size:.9rem;font-weight:800;}
+  .stack-legend .it span{color:var(--gray-2);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;}
+
+  /* ---------- Exploration / placeholder ---------- */
+  .placeholder{
+    border:1px dashed var(--hairline-strong);
+    background:var(--paper-2);
+    padding:22px;
+    font-size:.82rem;
+    color:var(--ink-70);
+    line-height:1.6;
+  }
+  .placeholder .tag{
+    display:inline-block;
+    font-size:.62rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--gray-2);
+    border:1px solid var(--gray-3);
+    padding:2px 6px;
+    margin-bottom:10px;
+  }
+  .placeholder code{
+    font-family:inherit;
+    font-size:.8rem;
+    background:none;
+    color:var(--ink);
+  }
+
+  /* ---------- Charts ---------- */
+  .chart-frame{border-top:1px solid var(--ink);padding-top:14px;}
+  svg.chart{width:100%;height:auto;display:block;}
+  .axis-label{font-size:9px;fill:var(--gray-2);font-family:'Inter',sans-serif;}
+  .axis-line{stroke:var(--hairline-strong);stroke-width:1;}
+  .grid-line{stroke:var(--hairline);stroke-width:1;}
+  .series-blue{stroke:var(--blue);stroke-width:2;fill:none;}
+  .dot-blue{fill:var(--blue);}
+  .zero-line{stroke:var(--ink);stroke-width:1;}
+  .bar-red{fill:var(--red);}
+  .bar-blue{fill:var(--blue);}
+  .bar-muted{fill:var(--gray-3);}
+  .ann{font-size:9.5px;fill:var(--ink);font-weight:600;}
+  .ann-sub{font-size:8.5px;fill:var(--gray-2);}
+
+  /* ---------- Filters ---------- */
+  .filters{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--ink);width:max-content;margin-bottom:20px;}
+  .filters button{
+    font-family:inherit;
+    background:none;border:none;border-right:1px solid var(--ink);
+    padding:8px 14px;font-size:.72rem;letter-spacing:.03em;
+    color:var(--gray-2);cursor:pointer;
+  }
+  .filters button:last-child{border-right:none;}
+  .filters button.active{background:var(--ink);color:var(--paper);font-weight:700;}
+
+  /* ---------- Heatmap ---------- */
+  .heat-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;}
+  .heat-cell{
+    aspect-ratio:1;
+    border:1px solid var(--hairline-strong);
+    display:flex;align-items:flex-end;justify-content:flex-start;
+    padding:3px;
+    font-size:8px;
+    color:var(--gray-2);
+  }
+  .heat-legend{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.68rem;color:var(--gray-2);}
+  .heat-legend .sc{display:flex;gap:2px;}
+  .heat-legend .sc i{width:12px;height:12px;border:1px solid var(--hairline-strong);}
+
+  /* ---------- Contact rows ---------- */
+  .contact-row{
+    display:grid;
+    grid-template-columns:20px 90px 1fr 110px 130px;
+    column-gap:16px;
+    align-items:center;
+    padding:13px 0;
+    border-bottom:1px solid var(--hairline);
+  }
+  .contact-row:first-child{border-top:1px solid var(--ink);}
+  .contact-row .dot{width:8px;height:8px;background:var(--red);border-radius:50%;justify-self:center;}
+  .contact-row .circ{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-2);font-weight:600;}
+  .contact-row .name{font-size:.86rem;font-weight:700;}
+  .contact-row .since{font-size:.78rem;color:var(--ink-70);text-align:right;}
+  .contact-row .over{font-size:.78rem;font-weight:700;color:var(--red);text-align:right;}
+  @media (max-width:700px){
+    .contact-row{grid-template-columns:14px 1fr;grid-template-areas:"dot name" "circ circ" "since over";row-gap:4px;}
+    .contact-row .dot{grid-area:dot;}
+    .contact-row .name{grid-area:name;}
+    .contact-row .circ{grid-area:circ;}
+    .contact-row .since{grid-area:since;text-align:left;}
+    .contact-row .over{grid-area:over;text-align:left;}
+  }
+
+  .circle-stat{display:flex;justify-content:space-between;border-bottom:1px solid var(--hairline);padding:10px 0;font-size:.85rem;}
+  .circle-stat:first-child{border-top:1px solid var(--ink);}
+  .circle-stat b{font-weight:800;}
+
+  footer.page-footer{
+    border-top:1px solid var(--ink);
+    padding:18px 0 40px;
+    font-size:.68rem;
+    color:var(--gray-2);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:700px){
+    .meta{display:none;}
+    .mark{grid-column:1/13;}
+    .page-head h1{grid-column:1/13;font-size:1.3rem;}
+    .page-head .stamp{grid-column:1/13;text-align:left;padding-top:6px;}
+    .span-3,.span-4,.span-5,.span-6,.span-7,.span-8,.span-9{grid-column:span 12;}
+    nav.tabs button{padding:12px 4px 10px;font-size:.72rem;}
+    nav.tabs button .n{display:none;}
+    .ruler{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="ruler"><div class="wrap">
+  <span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span>
+  <span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span>
+</div></div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="mark">
+      <div class="id">KDM360<sup>·C</sup></div>
+      <div class="sub">Personal Analytical Cockpit</div>
+    </div>
+    <div class="meta">
+      <div class="field"><span class="k">Session</span><span class="v">Q. Morel</span></div>
+      <div class="field"><span class="k">Horodatage</span><span class="v">20.09.2026 — 09:14</span></div>
+      <div class="field"><span class="k">Portée</span><span class="v">4 domaines</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Navigation principale">
+  <div class="wrap">
+    <ul role="tablist">
+      <li><button role="tab" data-target="today" aria-selected="true"><span class="n">01</span>Aujourd'hui</button></li>
+      <li><button role="tab" data-target="budget" aria-selected="false"><span class="n">02</span>Budget</button></li>
+      <li><button role="tab" data-target="sante" aria-selected="false"><span class="n">03</span>Santé</button></li>
+      <li><button role="tab" data-target="sport" aria-selected="false"><span class="n">04</span>Sport</button></li>
+      <li><button role="tab" data-target="social" aria-selected="false"><span class="n">05</span>Social</button></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============================================================ AUJOURD'HUI ============================================================ -->
+<section data-view="today" class="active" aria-labelledby="h-today">
+  <div class="page-head">
+    <h1 id="h-today">Aujourd'hui</h1>
+    <div class="stamp">Lecture consolidée · 4 domaines · mise à jour <b>09:14</b></div>
+  </div>
+
+  <div class="row">
+    <div class="span-3 kpi">
+      <div class="lab">Budget du mois</div>
+      <div class="val">+418<span class="unit">€</span></div>
+      <div class="delta info arrow-up">+3 % vs mois précédent</div>
+      <div class="foot">Solde courant, 66 % du mois écoulé</div>
+    </div>
+    <div class="span-3 kpi">
+      <div class="lab">Recovery (Whoop)</div>
+      <div class="val">71<span class="unit">%</span></div>
+      <div class="delta alert arrow-down">-12 pts vs hier (83 %)</div>
+      <div class="foot">Seuil de vigilance : &lt; 75 %</div>
+    </div>
+    <div class="span-3 kpi">
+      <div class="lab">Charge sport — 7 j</div>
+      <div class="val">8,4<span class="unit">/10</span></div>
+      <div class="delta alert">Élevée</div>
+      <div class="foot">Compétition CrossFit hier</div>
+    </div>
+    <div class="span-3 kpi">
+      <div class="lab">Social</div>
+      <div class="val">4<span class="unit">relances</span></div>
+      <div class="delta alert">En attente</div>
+      <div class="foot">Cercles Proche &amp; Régulier</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Synthèse</div>
+    <h2 class="block-title">À regarder — un point par domaine</h2>
+    <p class="block-note">Sélection automatique des écarts significatifs. Ordre : Budget, Santé, Sport, Social.</p>
+    <div class="watch">
+      <div class="watch-item">
+        <div class="idx">1</div>
+        <div class="dom">Budget</div>
+        <div class="txt">Catégorie <b>Courses</b> — 83 % du budget consommé alors que 66 % du mois est écoulé.</div>
+        <div class="metric">+17 pts d'écart</div>
+      </div>
+      <div class="watch-item">
+        <div class="idx">2</div>
+        <div class="dom">Santé</div>
+        <div class="txt">HRV stable à <b>58 ms</b> (-2 ms vs moyenne 7 j) mais strain élevé hier — <b>18,2</b>.</div>
+        <div class="metric">18,2 / 21</div>
+      </div>
+      <div class="watch-item">
+        <div class="idx">3</div>
+        <div class="dom">Sport</div>
+        <div class="txt">Compétition CrossFit hier — séance <b>Open 26.3</b>, 24 min, charge 9,1.</div>
+        <div class="metric">charge 9,1</div>
+      </div>
+      <div class="watch-item">
+        <div class="idx">4</div>
+        <div class="dom">Social</div>
+        <div class="txt"><b>Camille</b> (cercle Proche) dépasse son délai cible de contact de 9 jours — seuil 21 j, dernier contact il y a 30 j.</div>
+        <div class="metric">+9 j</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ BUDGET ============================================================ -->
+<section data-view="budget" aria-labelledby="h-budget">
+  <div class="page-head">
+    <h1 id="h-budget">Budget</h1>
+    <div class="stamp">Mois en cours · 66 % écoulé · devise <b>EUR</b></div>
+  </div>
+
+  <div class="row">
+    <div class="span-3 kpi">
+      <div class="lab">Revenus</div>
+      <div class="val">4 250<span class="unit">€</span></div>
+    </div>
+    <div class="span-3 kpi">
+      <div class="lab">Dépenses</div>
+      <div class="val">3 832<span class="unit">€</span></div>
+    </div>
+    <div class="span-3 kpi">
+      <div class="lab">Solde</div>
+      <div class="val">+418<span class="unit">€</span></div>
+      <div class="delta info arrow-up">+3 % vs mois précédent</div>
+    </div>
+    <div class="span-3 kpi">
+      <div class="lab">Épargne automatique</div>
+      <div class="val">600<span class="unit">€</span></div>
+      <div class="foot">Hors calcul des dépenses</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Lecture principale</div>
+    <h2 class="block-title">Budgets par catégorie — consommé / alloué</h2>
+    <p class="block-note">Repère vertical : 66 % du mois écoulé. Un dépassement de ce repère indique une dérive de rythme.</p>
+    <div class="cat-list">
+
+      <div class="cat-row">
+        <div class="name">Courses<span class="tag">Dérive</span></div>
+        <div class="bar-track"><div class="bar-fill over" style="width:83%"></div><div class="bar-ref" style="left:66%"></div></div>
+        <div class="figures">415 € / 500 €<span class="pct">83 %</span></div>
+      </div>
+
+      <div class="cat-row">
+        <div class="name">Transport<span class="tag">Proche limite</span></div>
+        <div class="bar-track"><div class="bar-fill warn" style="width:80%"></div><div class="bar-ref" style="left:66%"></div></div>
+        <div class="figures">120 € / 150 €<span class="pct">80 %</span></div>
+      </div>
+
+      <div class="cat-row">
+        <div class="name">Loisirs<span class="tag ok">Normal</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:60%"></div><div class="bar-ref" style="left:66%"></div></div>
+        <div class="figures">180 € / 300 €<span class="pct">60 %</span></div>
+      </div>
+
+      <div class="cat-row">
+        <div class="name">Restaurants<span class="tag">Proche limite</span></div>
+        <div class="bar-track"><div class="bar-fill warn" style="width:79%"></div><div class="bar-ref" style="left:66%"></div></div>
+        <div class="figures">95 € / 120 €<span class="pct">79 %</span></div>
+      </div>
+
+      <div class="cat-row">
+        <div class="name">Abonnements<span class="tag">Dérive</span></div>
+        <div class="bar-track"><div class="bar-fill over" style="width:97%"></div><div class="bar-ref" style="left:66%"></div></div>
+        <div class="figures">68 € / 70 €<span class="pct">97 %</span></div>
+      </div>
+
+    </div>
+    <div class="legend-inline">
+      <span class="sw"><i class="blue"></i> Normal</span>
+      <span class="sw"><i class="warn"></i> Proche limite</span>
+      <span class="sw"><i class="over"></i> Dérive</span>
+      <span class="sw"><i class="ref"></i> Repère 66 % du mois</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span-7 panel">
+      <div class="eyebrow">Patrimoine</div>
+      <h2 class="block-title">Total et composition</h2>
+      <div class="kpi" style="border-top:none;padding-top:0;margin-bottom:16px;">
+        <div class="val">42 300<span class="unit">€</span></div>
+        <div class="delta info arrow-up">+2,1 % sur 3 mois</div>
+      </div>
+      <div class="stack">
+        <div style="width:61%;background:var(--blue);"></div>
+        <div style="width:28%;background:var(--ink);"></div>
+        <div style="width:11%;background:var(--gray-3);"></div>
+      </div>
+      <div class="stack-legend">
+        <div class="it"><b>61 %</b><span>Épargne · ≈ 25 803 €</span></div>
+        <div class="it"><b>28 %</b><span>Investissements · ≈ 11 844 €</span></div>
+        <div class="it"><b>11 %</b><span>Liquidités · ≈ 4 653 €</span></div>
+      </div>
+    </div>
+
+    <div class="span-5 panel">
+      <div class="eyebrow">Repère</div>
+      <h2 class="block-title">Avancement du mois</h2>
+      <p class="block-note" style="margin-bottom:16px;">Jour 20 sur 30 — 66,7 % du mois écoulé. Les catégories au-delà de ce repère consomment plus vite que le rythme calendaire.</p>
+      <svg class="chart" viewBox="0 0 320 90" role="img" aria-label="Jauge d'avancement du mois, 66,7 pourcent écoulé">
+        <line x1="10" y1="45" x2="310" y2="45" class="axis-line"/>
+        <rect x="10" y="38" width="200" height="14" fill="var(--blue)"/>
+        <rect x="210" y="38" width="100" height="14" fill="var(--paper-2)" stroke="var(--hairline-strong)"/>
+        <line x1="210" y1="24" x2="210" y2="60" class="zero-line"/>
+        <text x="210" y="18" class="ann" text-anchor="middle">66,7 %</text>
+        <text x="10" y="72" class="axis-label">01</text>
+        <text x="310" y="72" class="axis-label" text-anchor="end">30</text>
+        <text x="210" y="72" class="axis-label" text-anchor="middle">20 (aujourd'hui)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Exploration — secondaire</div>
+    <h2 class="block-title">Historique, flux et transactions</h2>
+
+    <div class="row" style="margin-bottom:0;">
+      <div class="span-12">
+        <div class="placeholder">
+          <span class="tag">Composant existant — réutilisation à l'identique</span><br>
+          Sankey OS360 — rendu figé, intégration pixel-identique prévue (voir <code>docs/phase-0/02-sankey-reference.md</code>).
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="span-7 chart-frame">
+        <h2 class="block-title">Solde mensuel — 12 derniers mois</h2>
+        <svg class="chart" viewBox="0 0 620 260" role="img" aria-label="Historique du solde mensuel sur 12 mois, en euros">
+          <!-- gridlines -->
+          <line x1="60" y1="30" x2="600" y2="30" class="grid-line"/>
+          <line x1="60" y1="80" x2="600" y2="80" class="grid-line"/>
+          <line x1="60" y1="130" x2="600" y2="130" class="zero-line"/>
+          <line x1="60" y1="180" x2="600" y2="180" class="grid-line"/>
+          <line x1="60" y1="220" x2="600" y2="220" class="grid-line"/>
+          <text x="52" y="34" class="axis-label" text-anchor="end">+400</text>
+          <text x="52" y="84" class="axis-label" text-anchor="end">+200</text>
+          <text x="52" y="134" class="axis-label" text-anchor="end">0</text>
+          <text x="52" y="184" class="axis-label" text-anchor="end">-200</text>
+          <text x="52" y="224" class="axis-label" text-anchor="end">-400</text>
+
+          <polyline class="series-blue" points="80,105 125,180 170,111 215,143 260,86 305,211 350,71 395,124 440,115 485,158 530,80 575,32"/>
+          <g class="dot-blue">
+            <circle cx="80" cy="105"/><circle cx="125" cy="180"/><circle cx="170" cy="111"/><circle cx="215" cy="143"/>
+            <circle cx="260" cy="86"/><circle cx="305" cy="211"/><circle cx="350" cy="71"/><circle cx="395" cy="124"/>
+            <circle cx="440" cy="115"/><circle cx="485" cy="158"/><circle cx="530" cy="80"/>
+          </g>
+          <circle cx="575" cy="32" r="3.5" fill="var(--paper)" stroke="var(--red)" stroke-width="2"/>
+          <text x="575" y="20" class="ann" text-anchor="end" fill="var(--red)">+418 €</text>
+
+          <g class="axis-label" text-anchor="middle">
+            <text x="80" y="240">oct.</text><text x="125" y="240">nov.</text><text x="170" y="240">déc.</text>
+            <text x="215" y="240">jan.</text><text x="260" y="240">fév.</text><text x="305" y="240">mar.</text>
+            <text x="350" y="240">avr.</text><text x="395" y="240">mai</text><text x="440" y="240">juin</text>
+            <text x="485" y="240">juil.</text><text x="530" y="240">août</text><text x="575" y="240">sept.</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="span-5">
+        <h2 class="block-title">5 dernières transactions</h2>
+        <table class="data">
+          <thead><tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th class="num">Montant</th></tr></thead>
+          <tbody>
+            <tr><td>19.09</td><td>Migros</td><td>Courses</td><td class="num">-64,20 €</td></tr>
+            <tr><td>18.09</td><td>SBB CFF</td><td>Transport</td><td class="num">-12,80 €</td></tr>
+            <tr><td>17.09</td><td>Employeur SA</td><td>Revenus</td><td class="num">+4 250,00 €</td></tr>
+            <tr><td>16.09</td><td>Café Central</td><td>Restaurants</td><td class="num">-8,50 €</td></tr>
+            <tr><td>15.09</td><td>Spotify</td><td>Abonnements</td><td class="num">-10,90 €</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SANTÉ ============================================================ -->
+<section data-view="sante" aria-labelledby="h-sante">
+  <div class="page-head">
+    <h1 id="h-sante">Santé</h1>
+    <div class="stamp">Source Whoop · dernière synchro <b>07:02</b></div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Lecture principale</div>
+    <h2 class="block-title">Récupération</h2>
+    <div class="row" style="margin-bottom:0;">
+      <div class="span-3 kpi">
+        <div class="lab">Recovery</div>
+        <div class="val">71<span class="unit">%</span></div>
+        <div class="delta alert arrow-down">-12 pts vs hier (83 %)</div>
+      </div>
+      <div class="span-3 kpi">
+        <div class="lab">HRV</div>
+        <div class="val">58<span class="unit">ms</span></div>
+        <div class="delta arrow-down">-2 ms vs moy. 7 j (60 ms)</div>
+      </div>
+      <div class="span-3 kpi">
+        <div class="lab">RHR</div>
+        <div class="val">52<span class="unit">bpm</span></div>
+        <div class="foot">Fréquence cardiaque au repos</div>
+      </div>
+      <div class="span-3 kpi">
+        <div class="lab">Strain — hier</div>
+        <div class="val">18,2<span class="unit">/21</span></div>
+        <div class="delta alert">Élevé</div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:24px;margin-bottom:0;">
+      <div class="span-3 kpi" style="border-top:1px solid var(--hairline-strong);">
+        <div class="lab">SpO2</div>
+        <div class="val">97<span class="unit">%</span></div>
+      </div>
+      <div class="span-3 kpi" style="border-top:1px solid var(--hairline-strong);">
+        <div class="lab">Température cutanée</div>
+        <div class="val">+0,2<span class="unit">°C</span></div>
+        <div class="foot">vs référence individuelle</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span-6 panel">
+      <div class="eyebrow">Nuit précédente</div>
+      <h2 class="block-title">Sommeil</h2>
+      <p class="block-note">Durée 6 h 42 pour un besoin estimé de 7 h 50 — déficit de 1 h 08.</p>
+      <svg class="chart" viewBox="0 0 460 70" role="img" aria-label="Durée de sommeil comparée au besoin estimé">
+        <line x1="10" y1="20" x2="450" y2="20" class="grid-line"/>
+        <rect x="10" y="12" width="392" height="16" fill="var(--gray-3)" opacity="0.35"/>
+        <rect x="10" y="12" width="332" height="16" fill="var(--red)"/>
+        <line x1="402" y1="4" x2="402" y2="36" class="zero-line"/>
+        <text x="402" y="0" class="ann" text-anchor="middle">Besoin 7 h 50</text>
+        <text x="10" y="50" class="axis-label">0 h</text>
+        <text x="332" y="50" class="axis-label" text-anchor="middle">Réalisé 6 h 42</text>
+        <text x="450" y="50" class="axis-label" text-anchor="end">9 h</text>
+      </svg>
+      <div class="row" style="margin-top:18px;margin-bottom:0;">
+        <div class="span-6">
+          <table class="data">
+            <tbody>
+              <tr><td>Performance</td><td class="num">86 %</td></tr>
+              <tr><td>Efficacité</td><td class="num">91 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="span-6">
+          <table class="data">
+            <tbody>
+              <tr><td>Sommeil REM</td><td class="num">22 %</td></tr>
+              <tr><td>Sommeil profond</td><td class="num">18 %</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="span-6 panel">
+      <div class="eyebrow">Suivi</div>
+      <h2 class="block-title">Composition corporelle</h2>
+      <div class="row" style="margin-bottom:18px;">
+        <div class="span-4 kpi" style="border-top:1px solid var(--hairline-strong);">
+          <div class="lab">Poids</div>
+          <div class="val">78,4<span class="unit">kg</span></div>
+          <div class="delta info arrow-down">-0,3 kg / 30 j</div>
+        </div>
+        <div class="span-4 kpi" style="border-top:1px solid var(--hairline-strong);">
+          <div class="lab">Masse grasse</div>
+          <div class="val">15,2<span class="unit">%</span></div>
+        </div>
+        <div class="span-4 kpi" style="border-top:1px solid var(--hairline-strong);">
+          <div class="lab">Masse musculaire</div>
+          <div class="val">61,8<span class="unit">kg</span></div>
+        </div>
+      </div>
+
+      <h2 class="block-title">Nutrition — hier</h2>
+      <div class="cat-list" style="margin-top:8px;">
+        <div class="cat-row">
+          <div class="name">Énergie</div>
+          <div class="bar-track"><div class="bar-fill" style="width:97.5%"></div><div class="bar-ref" style="left:100%"></div></div>
+          <div class="figures">2 340 / 2 400 kcal<span class="pct">98 %</span></div>
+        </div>
+        <div class="cat-row">
+          <div class="name">Protéines</div>
+          <div class="bar-track"><div class="bar-fill" style="width:92.5%"></div><div class="bar-ref" style="left:100%"></div></div>
+          <div class="figures">148 / 160 g<span class="pct">93 %</span></div>
+        </div>
+        <div class="cat-row">
+          <div class="name">Glucides</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+          <div class="figures">210 g<span class="pct">— sans objectif</span></div>
+        </div>
+      </div>
+      <div class="legend-inline"><span class="sw"><i class="ref"></i> Repère objectif quotidien</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SPORT ============================================================ -->
+<section data-view="sport" aria-labelledby="h-sport">
+  <div class="page-head">
+    <h1 id="h-sport">Sport</h1>
+    <div class="stamp">Charge calculée sur activité cardiaque · échelle 0–10</div>
+  </div>
+
+  <div class="filters" role="tablist" aria-label="Période">
+    <button class="active">7 jours</button>
+    <button>28 jours</button>
+    <button>Mois en cours</button>
+    <button>Année</button>
+    <button>Historique complet</button>
+  </div>
+
+  <div class="row">
+    <div class="span-4 kpi">
+      <div class="lab">Séances — 7 j</div>
+      <div class="val">5</div>
+    </div>
+    <div class="span-4 kpi">
+      <div class="lab">Charge cumulée — 7 j</div>
+      <div class="val">41,2</div>
+    </div>
+    <div class="span-4 kpi">
+      <div class="lab">Durée totale — 7 j</div>
+      <div class="val">4 h 52</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span-7 panel">
+      <div class="eyebrow">Lecture principale</div>
+      <h2 class="block-title">Répartition par discipline — 28 jours</h2>
+      <div class="stack" style="margin-top:6px;">
+        <div style="width:45%;background:var(--blue);"></div>
+        <div style="width:30%;background:var(--ink);"></div>
+        <div style="width:15%;background:var(--gray-3);"></div>
+        <div style="width:10%;background:var(--hairline-strong);"></div>
+      </div>
+      <div class="stack-legend">
+        <div class="it"><b>45 %</b><span>CrossFit</span></div>
+        <div class="it"><b>30 %</b><span>Course</span></div>
+        <div class="it"><b>15 %</b><span>Vélo</span></div>
+        <div class="it"><b>10 %</b><span>Trail</span></div>
+      </div>
+
+      <h2 class="block-title" style="margin-top:28px;">Régularité — 12 semaines</h2>
+      <p class="block-note">Moyenne 4,2 séances / semaine · tendance stable.</p>
+      <svg class="chart" viewBox="0 0 560 90" role="img" aria-label="Régularité hebdomadaire sur 12 semaines, moyenne 4,2 séances">
+        <line x1="10" y1="60" x2="550" y2="60" class="axis-line"/>
+        <line x1="10" y1="40" x2="550" y2="40" class="grid-line" stroke-dasharray="2,3"/>
+        <text x="552" y="44" class="ann-sub">moy. 4,2</text>
+        <polyline class="series-blue" points="20,32 65,52 110,36 155,48 200,28 245,44 290,52 335,32 380,40 425,48 470,32 515,44"/>
+        <g class="dot-blue">
+          <circle cx="20" cy="32" r="2.4"/><circle cx="65" cy="52" r="2.4"/><circle cx="110" cy="36" r="2.4"/><circle cx="155" cy="48" r="2.4"/>
+          <circle cx="200" cy="28" r="2.4"/><circle cx="245" cy="44" r="2.4"/><circle cx="290" cy="52" r="2.4"/><circle cx="335" cy="32" r="2.4"/>
+          <circle cx="380" cy="40" r="2.4"/><circle cx="425" cy="48" r="2.4"/><circle cx="470" cy="32" r="2.4"/><circle cx="515" cy="44" r="2.4"/>
+        </g>
+        <text x="20" y="76" class="axis-label">S-11</text>
+        <text x="515" y="76" class="axis-label" text-anchor="end">S0</text>
+      </svg>
+    </div>
+
+    <div class="span-5 panel">
+      <div class="eyebrow">Dernière séance</div>
+      <h2 class="block-title">CrossFit — Open 26.3</h2>
+      <p class="block-note">Hier · compétition</p>
+      <table class="data">
+        <tbody>
+          <tr><td>Durée</td><td class="num">24 min</td></tr>
+          <tr><td>Charge</td><td class="num" style="color:var(--red);font-weight:700;">9,1</td></tr>
+          <tr><td>FC moyenne</td><td class="num">168 bpm</td></tr>
+          <tr><td>FC pic</td><td class="num" style="color:var(--red);font-weight:700;">184 bpm</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Exploration — secondaire</div>
+    <h2 class="block-title">Volume d'entraînement — 12 mois (heures)</h2>
+    <svg class="chart" viewBox="0 0 620 220" role="img" aria-label="Volume d'entraînement mensuel sur 12 mois en heures, pic en juillet à 22 heures, creux en février à 9 heures">
+      <line x1="50" y1="20" x2="600" y2="20" class="grid-line"/>
+      <line x1="50" y1="80" x2="600" y2="80" class="grid-line"/>
+      <line x1="50" y1="140" x2="600" y2="140" class="grid-line"/>
+      <line x1="50" y1="180" x2="600" y2="180" class="axis-line"/>
+      <text x="44" y="24" class="axis-label" text-anchor="end">22h</text>
+      <text x="44" y="84" class="axis-label" text-anchor="end">15h</text>
+      <text x="44" y="144" class="axis-label" text-anchor="end">7h</text>
+      <text x="44" y="184" class="axis-label" text-anchor="end">0h</text>
+
+      <!-- values: jan10 feb9 mar12 apr14 may16 jun19 jul22 aug18 sep15 oct13 nov11 dec10 ; scale: 180(0h) .. 20(30h) => y=180-(v*160/30) -->
+      <g class="bar-muted">
+        <rect x="58" y="126.7" width="30" height="53.3"></rect>
+        <rect x="104" y="132" width="30" height="48"></rect>
+        <rect x="150" y="116" width="30" height="64"></rect>
+        <rect x="196" y="105.3" width="30" height="74.7"></rect>
+      </g>
+      <g class="bar-blue">
+        <rect x="242" y="94.7" width="30" height="85.3"></rect>
+        <rect x="288" y="78.7" width="30" height="101.3"></rect>
+        <rect x="334" y="62.7" width="30" height="117.3"></rect>
+      </g>
+      <g class="bar-muted">
+        <rect x="380" y="84" width="30" height="96"></rect>
+        <rect x="426" y="100" width="30" height="80"></rect>
+        <rect x="472" y="110.7" width="30" height="69.3"></rect>
+        <rect x="518" y="121.3" width="30" height="58.7"></rect>
+      </g>
+      <rect x="564" y="126.7" width="30" height="53.3" class="bar-red"></rect>
+
+      <text x="334" y="55" class="ann" text-anchor="middle">22 h</text>
+      <text x="104" y="125" class="ann-sub" text-anchor="middle">9 h — creux</text>
+
+      <g class="axis-label" text-anchor="middle">
+        <text x="73" y="196">jan.</text><text x="119" y="196">fév.</text><text x="165" y="196">mars</text><text x="211" y="196">avr.</text>
+        <text x="257" y="196">mai</text><text x="303" y="196">juin</text><text x="349" y="196">juil.</text><text x="395" y="196">août</text>
+        <text x="441" y="196">sept.</text><text x="487" y="196">oct.</text><text x="533" y="196">nov.</text><text x="579" y="196">déc.</text>
+      </g>
+    </svg>
+    <div class="legend-inline">
+      <span class="sw"><i class="blue"></i> Trimestre de charge la plus élevée</span>
+      <span class="sw"><i class="over"></i> Mois en cours (projection)</span>
+      <span class="sw"><i class="warn" style="background:var(--gray-3);"></i> Reste de la période</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SOCIAL ============================================================ -->
+<section data-view="social" aria-labelledby="h-social">
+  <div class="page-head">
+    <h1 id="h-social">Social</h1>
+    <div class="stamp">34 contacts actifs · 4 cercles</div>
+  </div>
+
+  <div class="row">
+    <div class="span-4 panel">
+      <div class="eyebrow">Réseau</div>
+      <h2 class="block-title">Répartition par cercle</h2>
+      <div class="circle-stat"><span>Proche</span><b>6</b></div>
+      <div class="circle-stat"><span>Régulier</span><b>12</b></div>
+      <div class="circle-stat"><span>Occasionnel</span><b>11</b></div>
+      <div class="circle-stat"><span>Dormant</span><b>5</b></div>
+      <div class="circle-stat" style="border-top:1px solid var(--ink);margin-top:6px;"><span>Total actif</span><b>34</b></div>
+    </div>
+
+    <div class="span-8 panel">
+      <div class="eyebrow">Lecture principale</div>
+      <h2 class="block-title">À relancer — 4 contacts</h2>
+      <div class="contact-row">
+        <div class="dot"></div><div class="circ">Proche</div>
+        <div class="name">Camille</div>
+        <div class="since">Dernier contact il y a 30 j</div>
+        <div class="over">Seuil 21 j · +9 j</div>
+      </div>
+      <div class="contact-row">
+        <div class="dot"></div><div class="circ">Régulier</div>
+        <div class="name">Thomas</div>
+        <div class="since">Dernier contact il y a 45 j</div>
+        <div class="over">Seuil 35 j · +10 j</div>
+      </div>
+      <div class="contact-row">
+        <div class="dot"></div><div class="circ">Proche</div>
+        <div class="name">Léa</div>
+        <div class="since">Dernier contact il y a 25 j</div>
+        <div class="over">Seuil 21 j · +4 j</div>
+      </div>
+      <div class="contact-row">
+        <div class="dot"></div><div class="circ">Régulier</div>
+        <div class="name">Marc</div>
+        <div class="since">Dernier contact il y a 40 j</div>
+        <div class="over">Seuil 35 j · +5 j</div>
+      </div>
+      <p class="block-note" style="margin-top:12px;">Thomas — en attente de sa réponse depuis 12 j (initiative : lui).</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">Exploration — fiche contact</div>
+    <h2 class="block-title">Camille</h2>
+    <div class="row" style="margin-bottom:18px;">
+      <div class="span-3 kpi" style="border-top:1px solid var(--hairline-strong);">
+        <div class="lab">Cercle</div>
+        <div class="val" style="font-size:1.3rem;">Proche</div>
+      </div>
+      <div class="span-3 kpi" style="border-top:1px solid var(--hairline-strong);">
+        <div class="lab">Importance</div>
+        <div class="val" style="font-size:1.3rem;">Haute</div>
+      </div>
+      <div class="span-3 kpi" style="border-top:1px solid var(--hairline-strong);">
+        <div class="lab">Dernier contact</div>
+        <div class="val" style="font-size:1.3rem;">30 j</div>
+        <div class="foot">Appel</div>
+      </div>
+      <div class="span-3 kpi" style="border-top:1px solid var(--hairline-strong);">
+        <div class="lab">Interactions / 12 mois</div>
+        <div class="val" style="font-size:1.3rem;">14</div>
+      </div>
+    </div>
+
+    <h2 class="block-title">Densité d'interactions — 12 mois</h2>
+    <div class="heat-grid">
+      <div class="heat-cell" style="background:rgba(0,68,173,.55);">jan.</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.30);">fév.</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.70);">mars</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.20);">avr.</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.45);">mai</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.60);">juin</div>
+      <div class="heat-cell" style="background:var(--paper-2);border-color:var(--red);">juil.</div>
+      <div class="heat-cell" style="background:var(--paper-2);border-color:var(--red);">août</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.35);">sept.</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.55);">oct.</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.25);">nov.</div>
+      <div class="heat-cell" style="background:rgba(0,68,173,.65);">déc.</div>
+    </div>
+    <div class="heat-legend">
+      <span>Faible</span>
+      <span class="sc"><i style="background:rgba(0,68,173,.15);"></i><i style="background:rgba(0,68,173,.35);"></i><i style="background:rgba(0,68,173,.55);"></i><i style="background:rgba(0,68,173,.75);"></i></span>
+      <span>Élevée</span>
+      <span style="margin-left:16px;color:var(--red);font-weight:600;">Creux net — juillet / août</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="page-footer">
+  <div class="wrap" style="grid-column:1/13;display:flex;justify-content:space-between;width:100%;">
+    <span>KDM360 — Direction C · Swiss / Scientific</span>
+    <span>Grille 12 colonnes · Repère unique : dérive en rouge, focus en bleu</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var tabs = document.querySelectorAll('nav.tabs button[role="tab"]');
+  var views = document.querySelectorAll('section[data-view]');
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = btn.getAttribute('data-target');
+      tabs.forEach(function(b){ b.setAttribute('aria-selected', b === btn ? 'true' : 'false'); });
+      views.forEach(function(v){ v.classList.toggle('active', v.getAttribute('data-view') === target); });
+      window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+    });
+  });
+
+  var filterBtns = document.querySelectorAll('.filters button');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
