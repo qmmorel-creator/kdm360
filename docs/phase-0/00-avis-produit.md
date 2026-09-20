@@ -102,12 +102,14 @@ cherche à résoudre.
 
 - **Sankey figé + réécriture complète du reste** est une contrainte inhabituelle :
   la plupart des refontes visuelles touchent tout uniformément. Ici il faut un
-  composant dont le rendu (pas nécessairement le code) reste identique pendant que tout
-  son environnement change de langage visuel. Techniquement ça veut dire : extraire la
-  config ECharts du Sankey **telle quelle** (mêmes options `series`, mêmes couleurs en
-  dur, même palette), et ne surtout pas la faire hériter des tokens de design du nouveau
-  système — elle doit rester un îlot visuel non themé. Documenté en détail dans
-  `02-sankey-reference.md`.
+  composant dont le rendu reste identique pendant que tout son environnement change de
+  langage visuel. *Mise à jour après l'identification précise du composant
+  (`02-sankey-reference.md`) : le Sankey n'utilise pas ECharts — c'est un moteur SVG
+  entièrement fait main (bézier, tri par barycentre, échelle commune aux colonnes).*
+  Techniquement ça veut dire : réimplémenter ce moteur à l'identique (mêmes constantes
+  de courbure, mêmes couleurs et replis en dur, mêmes opacités), et ne surtout pas le
+  faire hériter des tokens de design du nouveau système — il doit rester un îlot visuel
+  non themé.
 - **Extraire les règles métier Budget sans les réinventer.** Le code source
   correspondant n'existe que dans le bundle minifié. La bonne méthode n'est pas de
   deviner les règles depuis leur résultat visible mais de localiser et lire le code

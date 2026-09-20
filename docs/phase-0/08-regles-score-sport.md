@@ -48,10 +48,9 @@ des calculs de charge/volume, par cohérence avec le figé.
   calcul partagé**, pas un recalcul divergent, pour éviter le risque de double lecture
   signalé dans l'avis produit initial (`00-avis-produit.md`, section 4).
 
-## Détecteur E — Tendance de la FC moyenne en CrossFit
+## Détecteurs E et F — Tendance de la FC moyenne par discipline (CrossFit et Running)
 
-## Détecteur F — Tendance de la FC moyenne en Running
-
+- Une instance du même détecteur par discipline : **E = CrossFit**, **F = Running**.
 - Pour chaque discipline séparément : compare la FC moyenne des 5 dernières séances de
   la discipline à la baseline des 20 séances précédentes de la même discipline.
 - **Hausse** durable (**+5 bpm**) : signal de fatigue/surentraînement possible sur

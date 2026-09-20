@@ -40,13 +40,26 @@ démonstration du langage visuel, pas encore soumises à ce filtre.
   dépassement réel est un signal plus fort qu'une simple dérive de rythme, même en
   tout début de mois.
 
+## Détecteur C — Solde mensuel négatif
+
+- Ne dépend pas du filtre des 150 € (celui-ci ne s'applique qu'aux catégories,
+  détecteurs A et B) — porte sur le solde global du mois, déjà figé en affichage
+  (`revenus − dépenses`, `04-metriques-figees.md`).
+- Se déclenche **le jour même** où `revenus du mois en cours − dépenses du mois en
+  cours` passe en négatif.
+- Alerte critique systématique dès le franchissement — c'est un basculement d'état
+  binaire (positif → négatif), pas une question de degré comme les détecteurs A/B.
+- Reste actif tant que le solde du mois n'est pas repassé positif.
+
 ## Sélection à l'affichage
 
 - **Page Budget** : toutes les catégories filtrées (> 150 € dépensés) avec un score
   > 0 (palier ≥ proche limite), triées par score décroissant.
 - **Aujourd'hui** : la catégorie au score le plus élevé, affichée comme exemple (même
   format que dans les 5 maquettes de Phase 0 : « Courses : 83 % du budget à 66 % du
-  mois »).
+  mois ») — **sauf si le détecteur C (solde négatif) est actif**, auquel cas il prime
+  toujours (alerte critique = priorité absolue, même traitement que le dépassement de
+  plafond en Santé).
 
 ## Mis de côté pour cette phase — détecteurs nécessitant l'historique réel
 
