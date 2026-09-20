@@ -25,14 +25,13 @@ des calculs de charge/volume, par cohérence avec le figé.
 - Se déclenche si `jours depuis dernière séance > 2× l'intervalle moyen`.
 - Score proportionnel au dépassement.
 
-## Détecteur C — Séance exceptionnelle (pic d'intensité)
+## Repère neutre — Séance exceptionnelle (pic d'intensité)
 
-- Se déclenche quand la charge d'une séance dépasse 1,5× la moyenne glissante des
-  séances récentes.
-- **Statut à trancher** : doit-il rester dans le catalogue de score (remonte en « à
-  regarder »), ou n'est-ce qu'une information neutre affichée sur la page Sport sans
-  être traitée comme signal d'attention ? Question posée à Quentin, réponse en attente
-  — provisoirement conservé dans le catalogue en attendant confirmation.
+- **Tranché par Quentin : hors catalogue de score.** Une séance dont la charge dépasse
+  1,5× la moyenne glissante des séances récentes est simplement signalée comme
+  information neutre sur la page Sport (ex. un badge « séance exceptionnelle » sur la
+  séance concernée) — elle ne remonte jamais en « à regarder » sur Sport ni sur
+  Aujourd'hui, contrairement aux détecteurs A, B, D, E, F.
 
 ## Détecteur D — Tendance de la fréquence cardiaque au repos (RHR)
 
@@ -67,7 +66,3 @@ des calculs de charge/volume, par cohérence avec le figé.
   même logique de priorité que les autres domaines (un signal critique prime toujours
   sur un signal simple).
 
-## Point encore ouvert
-
-Confirmer le statut du détecteur C (séance exceptionnelle) : dans le catalogue de
-score ou affichage neutre hors score.
